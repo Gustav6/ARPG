@@ -9,10 +9,15 @@ namespace ARPG
 {
     public static class Library
     {
+        public static int windowWidth = 1080;
+        public static int windowHeight = 1920;
+
         public static Player playerInstance;
 
         public static List<GameObject> gameObjects = new();
 
         public static TileMap tileMap = new();
+
+        public static Camera cameraInstance;
     }
 }

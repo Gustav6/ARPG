@@ -14,9 +14,9 @@ namespace ARPG
         protected Texture2D texture;
         protected Color color = Color.White;
         protected Vector2 scale = Vector2.One;
-        protected Rectangle source;
         protected Vector2 origin;
-        protected float rotation = 0;
+        public float rotation = 0;
+        public Rectangle source;
         #endregion
 
         public Vector2 Position { get; protected set; }

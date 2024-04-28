@@ -11,13 +11,15 @@ namespace ARPG
     public class Projectile : Moveable
     {
         private GameObject ownerOfProjectile;
+        private float lifeSpan;
 
-        public Projectile(Vector2 _position, Vector2 _direction, Texture2D _texture, GameObject owner)
+        public Projectile(Texture2D texture, Vector2 position, Vector2 direction, float lifeSpan, GameObject owner)
         {
             #region Starting variables
-            Position = _position;
-            direction = _direction;
-            texture = _texture;
+            this.texture = texture;
+            Position = position;
+            this.direction = direction;
+            this.lifeSpan = lifeSpan;
             ownerOfProjectile = owner;
             #endregion
 

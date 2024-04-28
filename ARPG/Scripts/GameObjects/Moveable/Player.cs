@@ -26,34 +26,26 @@ namespace ARPG
 
         public override void Update(GameTime gameTime)
         {
-            Controls();
+            MovementInput();
 
             base.Update(gameTime);
         }
 
-        private void Controls()
+        private void MovementInput()
         {
-            direction = Vector2.Zero;
-
-            #region Give Direction
-            if (KeyboardInput.IsPressed(Keys.W) && !KeyboardInput.IsPressed(Keys.S))
-                direction.Y = -1;
-
-            if (KeyboardInput.IsPressed(Keys.S) && !KeyboardInput.IsPressed(Keys.W))
-                direction.Y = 1;
-
-            if (KeyboardInput.IsPressed(Keys.A) && !KeyboardInput.IsPressed(Keys.D))
-                direction.X = -1;
-
-            if (KeyboardInput.IsPressed(Keys.D) && !KeyboardInput.IsPressed(Keys.A))
-                direction.X = 1;
-
-            #endregion
+            direction = new Vector2(KeyboardInput.Horizontal(), KeyboardInput.Vertical());
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
+        }
+
+        private enum PlayerState
+        {
+            Idle,
+            Walking,
+            Attacking,
         }
     }
 }

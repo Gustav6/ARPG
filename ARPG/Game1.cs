@@ -11,7 +11,11 @@ namespace ARPG
 
         public Game1()
         {
-            _graphics = new GraphicsDeviceManager(this);
+            _graphics = new GraphicsDeviceManager(this)
+            {
+                PreferredBackBufferHeight = Library.windowWidth,
+                PreferredBackBufferWidth = Library.windowHeight
+            };
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
@@ -20,7 +24,7 @@ namespace ARPG
         {
             base.Initialize();
 
-            GameManager.Initialize();
+            GameManager.Initialize(GraphicsDevice);
         }
 
         protected override void LoadContent()
@@ -44,7 +48,7 @@ namespace ARPG
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            _spriteBatch.Begin();
+            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Library.cameraInstance.Transform);
 
             GameManager.Draw(_spriteBatch);
 

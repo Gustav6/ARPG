@@ -13,6 +13,7 @@ namespace ARPG
     {
         private static GraphicsDevice graphicsDevice;
 
+        public static SpriteFont Font { get; private set; }
         public static Dictionary <Textures, Texture2D> TexturePairs { get; private set; }
         public static Dictionary<TileTextures, Texture2D> TileTexturePairs { get; private set; }
 
@@ -36,6 +37,8 @@ namespace ARPG
                 { TileTextures.passable, CreateTexture(64, 64, pixel => Color.White) },
                 { TileTextures.unPassable, CreateTexture(64, 64, pixel => Color.Black) }
             };
+
+            Font = content.Load<SpriteFont>("spritefont");
         }
 
         private static Texture2D CreateTexture(int width, int height, Func<int, Color> paint)

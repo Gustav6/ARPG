@@ -9,20 +9,25 @@ namespace ARPG
 {
     public class TileMap
     {
-        public List<Tile> Tiles { get; private set; }
+        public static float tileSize = 64;
+        public static float chunkSize = 32;
+        public List<Chunk> Chunks { get; private set; }
 
         public void GenerateMap()
         {
-            Tiles = new List<Tile>();
+            Chunks = new List<Chunk>
+            {
+                new Chunk(ChunkId.plain)
+            };
 
             // Procedural generation for a map 
         }
 
-        public void DrawMap(SpriteBatch spriteBatch)
+        public void DrawChunks(SpriteBatch spriteBatch)
         {
-            for (int i = 0; i < Tiles.Count; i++)
+            for (int i = 0; i < Chunks.Count; i++)
             {
-                Tiles[i].Draw(spriteBatch);
+                Chunks[i].DrawChunk(spriteBatch);
             }
         }
     }
