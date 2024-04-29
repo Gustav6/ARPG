@@ -37,6 +37,11 @@ namespace ARPG
             IsDestroyed = true;
         }
 
+        public virtual void CallOnDestroy()
+        {
+
+        }
+
         protected void SetOriginAndSource(Texture2D _texture)
         {
             origin = new Vector2(_texture.Width / 2, _texture.Height / 2);

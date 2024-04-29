@@ -14,9 +14,9 @@ namespace ARPG
     {
         public static void Initialize(GraphicsDevice graphics)
         {
-            Library.tileMap.GenerateMap();
+            Library.tileMap.GenerateChunks();
 
-            Library.playerInstance = new Player(new Vector2(500, 100));
+            Library.playerInstance = new Player(new Vector2(0, 0));
 
             Library.gameObjects.Add(Library.playerInstance);
 
@@ -43,13 +43,23 @@ namespace ARPG
             {
                 if (Library.gameObjects[i].IsDestroyed)
                 {
+                    Library.gameObjects[i].CallOnDestroy();
                     Library.gameObjects.RemoveAt(i);
                 }
-
             }
+
             if (KeyboardInput.IsPressed(Keys.Space))
             {
-                //Library.cameraInstance.ScreenShake(2, 2);
+                //TransitionSystem.SINTransition(3, Library.playerInstance, 1, 1, 2);
+            }
+
+            if (KeyboardInput.IsPressed(Keys.F1))
+            {
+                Library.cameraInstance.Zoom -= 0.1f;
+            }
+            if (KeyboardInput.IsPressed(Keys.F2))
+            {
+                Library.cameraInstance.Zoom += 0.1f;
             }
         }
 

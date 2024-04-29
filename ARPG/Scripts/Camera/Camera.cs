@@ -34,6 +34,7 @@ namespace ARPG
 
             set
             {
+                #region Saftey net
                 zoom = value;
 
                 // Cap maximum and minimum zoom
@@ -45,6 +46,7 @@ namespace ARPG
                 {
                     zoom = maximumZoom;
                 }
+                #endregion
             }
         }
 
@@ -54,6 +56,7 @@ namespace ARPG
 
             set
             {
+                #region Saftey net
                 rotation = value;
 
                 // Set rotation to 0 when camera has rotated 360°
@@ -61,6 +64,7 @@ namespace ARPG
                 {
                     rotation = 0;
                 }
+                #endregion
             }
         }
 
@@ -86,7 +90,7 @@ namespace ARPG
 
         public void ScreenShake(float duration, float intensity)
         {
-            //TransitionSystem.NewRotationTransition(1, rotation, TransitionType.SinCurve, 1, 1);
+
         }
     }
 }

@@ -25,7 +25,7 @@ namespace ARPG
             TexturePairs = new Dictionary<Textures, Texture2D>
             {
                 //{ Textures.playerTexture, content.Load<Texture2D>("") },
-                { Textures.playerTexture, CreateTexture(50, 100, pixel => Color.Green) },
+                { Textures.playerTexture, CreateTexture(50, 100, pixel => Color.Blue) },
                 { Textures.enemyTexture, CreateTexture(50, 100, pixel => Color.Red) }
             };
 
@@ -34,7 +34,7 @@ namespace ARPG
                 //{ TileTextures.passable, content.Load<Texture2D>("") },
                 //{ TileTextures.unPassable, content.Load<Texture2D>("") }
 
-                { TileTextures.passable, CreateTexture(64, 64, pixel => Color.White) },
+                { TileTextures.grass, CreateTexture(64, 64, pixel => Color.LightGreen) },
                 { TileTextures.unPassable, CreateTexture(64, 64, pixel => Color.Black) }
             };
 
@@ -70,7 +70,7 @@ namespace ARPG
     }
     public enum TileTextures
     {
-        passable,
+        grass,
         unPassable
     }
 }

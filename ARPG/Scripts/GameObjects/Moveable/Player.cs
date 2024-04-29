@@ -16,7 +16,7 @@ namespace ARPG
             #region Starting variables
             Position = startingPosition;
             texture = TextureManager.TexturePairs[Textures.playerTexture];
-            movementSpeed = 100;
+            movementSpeed = 300;
             #endregion
 
             SetOriginAndSource(texture);

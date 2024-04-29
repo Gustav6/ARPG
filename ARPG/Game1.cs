@@ -14,7 +14,8 @@ namespace ARPG
             _graphics = new GraphicsDeviceManager(this)
             {
                 PreferredBackBufferHeight = Library.windowWidth,
-                PreferredBackBufferWidth = Library.windowHeight
+                PreferredBackBufferWidth = Library.windowHeight,
+                //IsFullScreen = true,
             };
             Content.RootDirectory = "Content";
             IsMouseVisible = true;

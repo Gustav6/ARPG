@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,14 +14,14 @@ namespace ARPG
         public static float chunkSize = 32;
         public List<Chunk> Chunks { get; private set; }
 
-        public void GenerateMap()
+        public void GenerateChunks()
         {
             Chunks = new List<Chunk>
             {
-                new Chunk(ChunkId.plain)
+                new Chunk(ChunkId.plain, new Vector2((chunkSize * tileSize) / -2, (chunkSize * tileSize) / -2))
             };
 
-            // Procedural generation for a map 
+            // Procedural generation 
         }
 
         public void DrawChunks(SpriteBatch spriteBatch)

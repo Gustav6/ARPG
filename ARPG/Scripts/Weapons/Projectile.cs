@@ -30,6 +30,15 @@ namespace ARPG
 
         public override void Update(GameTime gameTime)
         {
+            if (lifeSpan <= 0)
+            {
+                Destroy();
+            }
+            else
+            {
+                lifeSpan -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+
             base.Update(gameTime);
         }
 

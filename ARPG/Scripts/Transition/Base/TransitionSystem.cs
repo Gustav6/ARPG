@@ -20,7 +20,11 @@ namespace ARPG
 
             for (int i = transitions.Count - 1; i >= 0; i--)
             {
-                if (transitions[i].isRemoved)
+                if (transitions[i].owner == null)
+                {
+                    transitions.RemoveAt(i);
+                }
+                else if (transitions[i].isRemoved)
                 {
                     transitions[i].CallOnDisable();
                     transitions.RemoveAt(i);
@@ -28,12 +32,21 @@ namespace ARPG
             }
         }
 
-        public static void NewRotationTransition(float duration, GameObject affected, float target, TransitionType type)
+        #region Rotation Transitions
+        public static void RotationTransition(float duration, GameObject affected, float target, TransitionType type)
         {
-            RotationTransition transition = new(duration, affected, target, type, repetitions, amplitude);
-
-            transitions.Add(transition);
+            transitions.Add(new RotationTransition(duration, affected, target, type));
         }
+        public static void CrossFadeRotationTransition(float duration, GameObject affected, float target, TransitionType start, TransitionType end)
+        {
+            transitions.Add(new RotationTransition(duration, affected, target, start, end));
+        }
+
+        public static void SINTransition(float duration, GameObject affected, float target, float repetitions, float amplitude)
+        {
+            transitions.Add(new RotationTransition(duration, affected, target, TransitionType.SinCurve, repetitions, amplitude));
+        }
+        #endregion
 
         public static float SmoothStart2(float t)
         {
@@ -64,9 +77,9 @@ namespace ARPG
         {
             return 1 - (1 - t) * (1 - t) * (1 - t) * (1 - t);
         }
-        public static float SinCurve(float repetitions, float amplitude, float t)
+        public static float SinCurve(float amplitude, float t)
         {
-            return MathF.Sin(t * MathF.PI * repetitions) * amplitude * -1;
+            return MathF.Sin(t * MathF.PI * (MathF.PI / 2)) * amplitude;
         }
 
         public static float Crossfade(float transitionStart, float transitionEnd, float t)

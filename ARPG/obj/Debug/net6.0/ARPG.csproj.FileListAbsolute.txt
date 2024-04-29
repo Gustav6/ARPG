@@ -49,3 +49,4 @@ C:\Users\gusta\Documents\Github\ARPG\ARPG\obj\Debug\net6.0\ARPG.pdb
 C:\Users\gusta\Documents\Github\ARPG\ARPG\obj\Debug\net6.0\ARPG.genruntimeconfig.cache
 C:\Users\gusta\Documents\Github\ARPG\ARPG\obj\Debug\net6.0\ref\ARPG.dll
 C:\Users\gusta\Documents\Github\ARPG\ARPG\bin\Debug\net6.0\Content\spritefont.xnb
+C:\Users\gustav.ekstrom1\Documents\GitHub\ARPG\ARPG\bin\Debug\net6.0\Content\spritefont.xnb
