@@ -11,7 +11,7 @@ namespace ARPG
     public class TileMap
     {
         public static float tileSize = 64;
-        public static float chunkSize = 32;
+        public static float chunkSize = 16;
         public List<Chunk> Chunks { get; private set; }
 
         public void GenerateChunks()

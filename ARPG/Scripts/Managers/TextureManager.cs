@@ -14,6 +14,8 @@ namespace ARPG
         private static GraphicsDevice graphicsDevice;
 
         public static SpriteFont Font { get; private set; }
+
+        public static Dictionary<SpriteLayer, float> SpriteLayerPair { get; private set; }
         public static Dictionary <Textures, Texture2D> TexturePairs { get; private set; }
         public static Dictionary<TileTextures, Texture2D> TileTexturePairs { get; private set; }
 
@@ -21,6 +23,13 @@ namespace ARPG
         public static void LoadTextures(ContentManager content, GraphicsDevice _graphicsDevice)
         {
             graphicsDevice = _graphicsDevice;
+
+            SpriteLayerPair = new Dictionary<SpriteLayer, float>
+            {
+                { SpriteLayer.Default, 0 },
+                { SpriteLayer.Enemy, 0.1f },
+                { SpriteLayer.Player, 0.2f }
+            };
 
             TexturePairs = new Dictionary<Textures, Texture2D>
             {
@@ -72,5 +81,11 @@ namespace ARPG
     {
         grass,
         unPassable
+    }
+    public enum SpriteLayer
+    {
+        Default,    
+        Enemy,
+        Player,
     }
 }

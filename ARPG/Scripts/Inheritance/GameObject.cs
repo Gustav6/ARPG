@@ -15,6 +15,7 @@ namespace ARPG
         protected Color color = Color.White;
         protected Vector2 scale = Vector2.One;
         protected Vector2 origin;
+        protected float spriteLayer = TextureManager.SpriteLayerPair[SpriteLayer.Default];
         public float rotation = 0;
         public Rectangle source;
         #endregion
@@ -50,7 +51,7 @@ namespace ARPG
 
         public virtual void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, Position, source, color, rotation, origin, scale, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, Position, source, color, rotation, origin, scale, SpriteEffects.None, spriteLayer);
         }
     }
 }

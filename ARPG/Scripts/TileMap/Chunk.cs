@@ -68,5 +68,6 @@ namespace ARPG
     {
         plain,
         beach,
+        ocean,
     }
 }

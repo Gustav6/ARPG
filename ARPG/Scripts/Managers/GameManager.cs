@@ -17,6 +17,7 @@ namespace ARPG
             Library.tileMap.GenerateChunks();
 
             Library.playerInstance = new Player(new Vector2(0, 0));
+            Library.gameObjects.Add(new Enemy(new Vector2(0, 0)));
 
             Library.gameObjects.Add(Library.playerInstance);
 

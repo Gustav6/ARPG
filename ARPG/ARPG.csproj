@@ -24,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\Interfaces\" />
+    <Folder Include="Scripts\Save System\" />
     <Folder Include="Scripts\Procedural Generation\" />
     <Folder Include="Scripts\Weapons\Melee\" />
     <Folder Include="Scripts\Weapons\Ranged\" />
