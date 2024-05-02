@@ -15,7 +15,7 @@ namespace ARPG
             {
                 PreferredBackBufferHeight = Library.windowWidth,
                 PreferredBackBufferWidth = Library.windowHeight,
-                //IsFullScreen = true,
+                IsFullScreen = true,
             };
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
@@ -47,7 +47,7 @@ namespace ARPG
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
             _spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, null, null, null, null, Library.cameraInstance.Transform);
 

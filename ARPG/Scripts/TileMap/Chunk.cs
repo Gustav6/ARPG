@@ -16,11 +16,11 @@ namespace ARPG
         private List<Tile> tiles = new();
 
         public Rectangle chunkHitbox;
-        private Point hitboxSize = new((int)(TileMap.chunkSize * TileMap.tileSize), (int)(TileMap.chunkSize * TileMap.tileSize));
+        //private Point hitboxSize = new((int)(TileMap.chunkSize * TileMap.tileSize), (int)(TileMap.chunkSize * TileMap.tileSize));
 
         public Chunk(ChunkId id, Vector2 position)
         {
-            tileMap = new Tile[(int)TileMap.chunkSize, (int)TileMap.chunkSize];
+            //tileMap = new Tile[(int)TileMap.chunkSize, (int)TileMap.chunkSize];
             Position = position;
 
             for (int x = 0; x < tileMap.GetLength(0); x++)
@@ -30,15 +30,15 @@ namespace ARPG
                     int xPosition = (x * (int)TileMap.tileSize) + (int)position.X;
                     int yPosition = (y * (int)TileMap.tileSize) + (int)position.Y;
 
-                    Texture2D texture = TextureManager.TileTexturePairs[TileTextures.grass];
+                    Texture2D texture = TextureManager.TileTexturePairs[TileTextures.passable];
 
                     switch (id)
                     {
                         case ChunkId.plain:
-                            texture = TextureManager.TileTexturePairs[TileTextures.grass];
+                            texture = TextureManager.TileTexturePairs[TileTextures.passable];
                             break;
                         case ChunkId.beach:
-                            texture = TextureManager.TileTexturePairs[TileTextures.grass];
+                            texture = TextureManager.TileTexturePairs[TileTextures.passable];
                             break;
                         default:
                             break;
@@ -52,7 +52,7 @@ namespace ARPG
                 }
             }
 
-            chunkHitbox = new Rectangle(position.ToPoint(), hitboxSize);
+            //chunkHitbox = new Rectangle(position.ToPoint(), hitboxSize);
         }
 
         public void DrawChunk(SpriteBatch spriteBatch)

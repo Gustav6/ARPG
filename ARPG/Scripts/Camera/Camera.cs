@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ARPG
 {
-    public class Camera
+    public class Camera : GameObject
     {
         #region Default variables
         public Matrix Transform { get; private set; }
@@ -16,10 +16,9 @@ namespace ARPG
         private Vector2 center;
 
         private float zoom = 1;
-        private float rotation = 0;
 
         private float maximumZoom = 3;
-        private float minimumZoom = 0.1f;
+        private float minimumZoom = 0.05f;
         private const double rotationConstFor360 = Math.PI * 2;
         #endregion
 
@@ -74,7 +73,7 @@ namespace ARPG
             target = _target;
         }
 
-        public void Update()
+        public override void Update(GameTime gameTime)
         {
             if (target != null)
             {
@@ -90,7 +89,9 @@ namespace ARPG
 
         public void ScreenShake(float duration, float intensity)
         {
-
+            TransitionSystem.SINTransition(duration, this, intensity, 1, 1, true);
         }
+
+        public override void Draw(SpriteBatch spriteBatch) { }
     }
 }

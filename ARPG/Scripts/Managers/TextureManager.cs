@@ -15,7 +15,6 @@ namespace ARPG
 
         public static SpriteFont Font { get; private set; }
 
-        public static Dictionary<SpriteLayer, float> SpriteLayerPair { get; private set; }
         public static Dictionary <Textures, Texture2D> TexturePairs { get; private set; }
         public static Dictionary<TileTextures, Texture2D> TileTexturePairs { get; private set; }
 
@@ -23,14 +22,6 @@ namespace ARPG
         public static void LoadTextures(ContentManager content, GraphicsDevice _graphicsDevice)
         {
             graphicsDevice = _graphicsDevice;
-
-            SpriteLayerPair = new Dictionary<SpriteLayer, float>
-            {
-                { SpriteLayer.Default, 0 },
-                { SpriteLayer.Enemy, 0.1f },
-                { SpriteLayer.Player, 0.2f }
-            };
-
             TexturePairs = new Dictionary<Textures, Texture2D>
             {
                 //{ Textures.playerTexture, content.Load<Texture2D>("") },
@@ -43,7 +34,7 @@ namespace ARPG
                 //{ TileTextures.passable, content.Load<Texture2D>("") },
                 //{ TileTextures.unPassable, content.Load<Texture2D>("") }
 
-                { TileTextures.grass, CreateTexture(64, 64, pixel => Color.LightGreen) },
+                { TileTextures.passable, CreateTexture(64, 64, pixel => Color.White) },
                 { TileTextures.unPassable, CreateTexture(64, 64, pixel => Color.Black) }
             };
 
@@ -79,9 +70,10 @@ namespace ARPG
     }
     public enum TileTextures
     {
-        grass,
+        passable,
         unPassable
     }
+
     public enum SpriteLayer
     {
         Default,    

@@ -22,6 +22,8 @@ namespace ARPG
         private float startingValue;
         private float target;
 
+        private bool returnToStart;
+
         #region Normal transition
         public RotationTransition(float duration, GameObject affected, float target, TransitionType type)
         {
@@ -48,7 +50,7 @@ namespace ARPG
         #endregion
 
         #region Sin Curve
-        public RotationTransition(float duration, GameObject affected, float target, TransitionType type, float repetitions = 0, float amplitude = 0)
+        public RotationTransition(float duration, GameObject affected, float target, TransitionType type, float repetitions, float amplitude, bool returnToStart)
         {
             this.affected = affected;
             this.duration = duration;
@@ -58,6 +60,7 @@ namespace ARPG
             transitionType = type;
             this.repetitions = repetitions;
             this.amplitude = amplitude;
+            this.returnToStart = returnToStart;
         }
         #endregion
 
@@ -160,6 +163,12 @@ namespace ARPG
                         break;
                     case TransitionType.SmoothStart4:
                         setEndValue = true;
+                        break;
+                    case TransitionType.SinCurve:
+                        if (returnToStart)
+                        {
+                            TransitionSystem.RotationTransition(duration, affected, startingValue, TransitionType.SmoothStop2);
+                        }
                         break;
                     default:
                         break;

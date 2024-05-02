@@ -15,12 +15,12 @@ namespace ARPG
         protected Color color = Color.White;
         protected Vector2 scale = Vector2.One;
         protected Vector2 origin;
-        protected float spriteLayer = TextureManager.SpriteLayerPair[SpriteLayer.Default];
+        protected float spriteLayer = (int)SpriteLayer.Default;
         public float rotation = 0;
         public Rectangle source;
         #endregion
 
-        public Vector2 Position { get; protected set; }
+        public Vector2 Position { get; set; }
         public bool IsDestroyed { get; private set; }
 
         public virtual void Start()

@@ -14,14 +14,16 @@ namespace ARPG
     {
         public static void Initialize(GraphicsDevice graphics)
         {
-            Library.tileMap.GenerateChunks();
-
             Library.playerInstance = new Player(new Vector2(0, 0));
-            Library.gameObjects.Add(new Enemy(new Vector2(0, 0)));
-
-            Library.gameObjects.Add(Library.playerInstance);
-
             Library.cameraInstance = new Camera(graphics.Viewport, Library.playerInstance);
+
+            Library.tileMap.GenerateNewMap();
+
+            Library.gameObjects = new List<GameObject>()
+            {
+                { Library.playerInstance },
+                { Library.cameraInstance }
+            };
         }
 
         public static void LoadContent(ContentManager content, GraphicsDevice graphicsDevice)
@@ -32,7 +34,6 @@ namespace ARPG
         public static void Update(GameTime gameTime)
         {
             InputController.GetInput();
-            Library.cameraInstance.Update();
             TransitionSystem.Update(gameTime);
 
             for (int i = 0; i < Library.gameObjects.Count; i++)
@@ -49,9 +50,10 @@ namespace ARPG
                 }
             }
 
-            if (KeyboardInput.IsPressed(Keys.Space))
+            if (KeyboardInput.HasBeenPressed(Keys.Space))
             {
-                //TransitionSystem.SINTransition(3, Library.playerInstance, 1, 1, 2);
+                //Library.tileMap.GenerateNewMap();
+                Library.cameraInstance.ScreenShake(1, 1);
             }
 
             if (KeyboardInput.IsPressed(Keys.F1))
@@ -66,7 +68,7 @@ namespace ARPG
 
         public static void Draw(SpriteBatch spriteBatch)
         {
-            Library.tileMap.DrawChunks(spriteBatch);
+            Library.tileMap.DrawMap(spriteBatch);
 
             for (int i = 0; i < Library.gameObjects.Count; i++)
             {

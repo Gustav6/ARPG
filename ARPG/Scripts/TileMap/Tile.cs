@@ -33,9 +33,9 @@ namespace ARPG
 
             // Draw a hitbox over tiles that cant be passed
 
-            if (Type == TileType.impassable)
+            if (Type == TileType.unpassable)
             {
-                spriteBatch.Draw(TextureManager.Hitbox(new Vector2(Hitbox.Width, Hitbox.Height), Color.Green, 1), Position, Color.White);
+                //spriteBatch.Draw(TextureManager.Hitbox(new Vector2(Hitbox.Width, Hitbox.Height), Color.Green, 1), Position, Color.White);
             }
         }
     }
@@ -43,6 +43,6 @@ namespace ARPG
     public enum TileType
     {
         passable, 
-        impassable
+        unpassable
     }
 }

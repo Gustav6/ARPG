@@ -42,9 +42,9 @@ namespace ARPG
             transitions.Add(new RotationTransition(duration, affected, target, start, end));
         }
 
-        public static void SINTransition(float duration, GameObject affected, float target, float repetitions, float amplitude)
+        public static void SINTransition(float duration, GameObject affected, float target, float repetitions, float amplitude, bool returnToOriginl = false)
         {
-            transitions.Add(new RotationTransition(duration, affected, target, TransitionType.SinCurve, repetitions, amplitude));
+            transitions.Add(new RotationTransition(duration, affected, target, TransitionType.SinCurve, repetitions, amplitude, returnToOriginl));
         }
         #endregion
 
