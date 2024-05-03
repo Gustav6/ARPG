@@ -23,9 +23,11 @@ namespace ARPG
         private float target;
 
         private bool returnToStart;
+        private bool callSafteyNet;
+
 
         #region Normal transition
-        public RotationTransition(float duration, GameObject affected, float target, TransitionType type)
+        public RotationTransition(float duration, GameObject affected, float target, TransitionType type, RunOnDisable run, bool callSaftey = true)
         {
             this.affected = affected;
             this.duration = duration;
@@ -33,11 +35,13 @@ namespace ARPG
             owner = affected;
             startingValue = owner.rotation;
             transitionType = type;
+            callSafteyNet = callSaftey;
+            CallOnDisable = run;
         }
         #endregion
 
         #region Cross fade transition
-        public RotationTransition(float duration, GameObject affected, float target, TransitionType start, TransitionType end)
+        public RotationTransition(float duration, GameObject affected, float target, TransitionType start, TransitionType end, RunOnDisable run, bool callSaftey = true)
         {
             this.affected = affected;
             this.duration = duration;
@@ -46,21 +50,29 @@ namespace ARPG
             startingValue = owner.rotation;
             transitionStart = start;
             transitionEnd = end;
+            callSafteyNet = callSaftey;
+            CallOnDisable = run;
         }
         #endregion
 
         #region Sin Curve
-        public RotationTransition(float duration, GameObject affected, float target, TransitionType type, float repetitions, float amplitude, bool returnToStart)
+        public RotationTransition(float duration, GameObject affected, float target, float repetitions, float amplitude, bool returnToStart, RunOnDisable run)
         {
             this.affected = affected;
             this.duration = duration;
             this.target = target;
             owner = affected;
             startingValue = owner.rotation;
-            transitionType = type;
+            transitionType = TransitionType.SinCurve;
             this.repetitions = repetitions;
             this.amplitude = amplitude;
             this.returnToStart = returnToStart;
+            CallOnDisable = run;
+
+            if (returnToStart)
+            {
+                CallOnDisable += ReturnToOriginalRotation;
+            }
         }
         #endregion
 
@@ -146,42 +158,22 @@ namespace ARPG
             base.Update(gameTime);
         }
 
-        public override void CallOnDisable()
+        private void ReturnToOriginalRotation()
         {
-            #region Set rotation to target if type = smoothstart
-            if (transitionType != null)
+            TransitionSystem.transitions.Add(new RotationTransition(duration, Library.cameraInstance, startingValue + target, TransitionType.SmoothStop2, ResetRotation, false));
+        }
+
+        private void ResetRotation()
+        {
+            affected.rotation = 0;
+        }
+
+        public override void SafteyNet()
+        {
+            if (transitionType != TransitionType.SinCurve && callSafteyNet)
             {
-                bool setEndValue = false;
-
-                switch (transitionType)
-                {
-                    case TransitionType.SmoothStart2:
-                        setEndValue = true;
-                        break;
-                    case TransitionType.SmoothStart3:
-                        setEndValue = true;
-                        break;
-                    case TransitionType.SmoothStart4:
-                        setEndValue = true;
-                        break;
-                    case TransitionType.SinCurve:
-                        if (returnToStart)
-                        {
-                            TransitionSystem.RotationTransition(duration, affected, startingValue, TransitionType.SmoothStop2);
-                        }
-                        break;
-                    default:
-                        break;
-                }
-
-                if (setEndValue)
-                {
-                    affected.rotation = target + startingValue;
-                }
+                affected.rotation = target + startingValue;
             }
-            #endregion
-
-            base.CallOnDisable();
         }
     }
 }

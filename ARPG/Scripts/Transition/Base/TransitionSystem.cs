@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static ARPG.Transition;
 
 namespace ARPG
 {
@@ -20,31 +21,28 @@ namespace ARPG
 
             for (int i = transitions.Count - 1; i >= 0; i--)
             {
-                if (transitions[i].owner == null)
+                if (transitions[i].isRemoved || transitions[i].owner == null)
                 {
-                    transitions.RemoveAt(i);
-                }
-                else if (transitions[i].isRemoved)
-                {
-                    transitions[i].CallOnDisable();
+                    transitions[i].CallOnDisable?.Invoke();
+                    transitions[i].SafteyNet();
                     transitions.RemoveAt(i);
                 }
             }
         }
 
         #region Rotation Transitions
-        public static void RotationTransition(float duration, GameObject affected, float target, TransitionType type)
+        public static void RotationTransition(float duration, GameObject affected, float target, TransitionType type, RunOnDisable callOnDisable = null)
         {
-            transitions.Add(new RotationTransition(duration, affected, target, type));
+            transitions.Add(new RotationTransition(duration, affected, target, type, callOnDisable));
         }
-        public static void CrossFadeRotationTransition(float duration, GameObject affected, float target, TransitionType start, TransitionType end)
+        public static void CrossFadeRotationTransition(float duration, GameObject affected, float target, TransitionType start, TransitionType end, RunOnDisable callOnDisable = null)
         {
-            transitions.Add(new RotationTransition(duration, affected, target, start, end));
+            transitions.Add(new RotationTransition(duration, affected, target, start, end, callOnDisable));
         }
 
-        public static void SINTransition(float duration, GameObject affected, float target, float repetitions, float amplitude, bool returnToOriginl = false)
+        public static void SINTransition(float duration, GameObject affected, float target, float repetitions, float amplitude, bool returnToOriginl = false, RunOnDisable callOnDisable = null)
         {
-            transitions.Add(new RotationTransition(duration, affected, target, TransitionType.SinCurve, repetitions, amplitude, returnToOriginl));
+            transitions.Add(new RotationTransition(duration, affected, target, repetitions, amplitude, returnToOriginl, callOnDisable));
         }
         #endregion
 

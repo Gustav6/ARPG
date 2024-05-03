@@ -15,7 +15,7 @@ namespace ARPG
             {
                 PreferredBackBufferHeight = Library.windowWidth,
                 PreferredBackBufferWidth = Library.windowHeight,
-                IsFullScreen = true,
+                //IsFullScreen = true,
             };
             Content.RootDirectory = "Content";
             IsMouseVisible = true;

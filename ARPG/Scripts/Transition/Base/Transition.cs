@@ -11,6 +11,9 @@ namespace ARPG
     {
         public GameObject owner;
 
+        public delegate void RunOnDisable();
+        public RunOnDisable CallOnDisable { get; protected set; }
+
         public bool isRemoved;
 
         public float timer;
@@ -27,7 +30,7 @@ namespace ARPG
             }
         }
 
-        public virtual void CallOnDisable()
+        public virtual void SafteyNet()
         {
 
         }

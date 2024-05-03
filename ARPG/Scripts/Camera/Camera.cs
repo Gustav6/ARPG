@@ -89,7 +89,7 @@ namespace ARPG
 
         public void ScreenShake(float duration, float intensity)
         {
-            TransitionSystem.SINTransition(duration, this, intensity, 1, 1, true);
+            TransitionSystem.SINTransition(duration / 3, this, intensity * zoom, 1, 1, true);
         }
 
         public override void Draw(SpriteBatch spriteBatch) { }
