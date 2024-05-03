@@ -53,7 +53,8 @@ namespace ARPG
             if (KeyboardInput.HasBeenPressed(Keys.Space))
             {
                 //Library.tileMap.GenerateNewMap();
-                Library.cameraInstance.ScreenShake(1, 0.1f);
+
+                Library.cameraInstance.ScreenShake(0.15f, 0.045f);
             }
 
             if (KeyboardInput.IsPressed(Keys.F1))

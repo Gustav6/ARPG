@@ -16,12 +16,19 @@ namespace ARPG
         {
             for (int i = 0; i < transitions.Count; i++)
             {
-                transitions[i].Update(gameTime);
+                if (transitions[i].Affected != null)
+                {
+                    transitions[i].Update(gameTime);
+                }
             }
 
             for (int i = transitions.Count - 1; i >= 0; i--)
             {
-                if (transitions[i].isRemoved || transitions[i].owner == null)
+                if (transitions[i].Affected == null)
+                {
+                    transitions.RemoveAt(i);
+                }
+                else if (transitions[i].isRemoved)
                 {
                     transitions[i].CallOnDisable?.Invoke();
                     transitions[i].SafteyNet();

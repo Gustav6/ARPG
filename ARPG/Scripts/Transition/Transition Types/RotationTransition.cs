@@ -14,7 +14,6 @@ namespace ARPG
         private readonly TransitionType? transitionType;
         private readonly TransitionType transitionStart;
         private readonly TransitionType transitionEnd;
-        private GameObject affected;
 
         private float repetitions;
         private float amplitude;
@@ -22,18 +21,16 @@ namespace ARPG
         private float startingValue;
         private float target;
 
-        private bool returnToStart;
         private bool callSafteyNet;
 
 
         #region Normal transition
         public RotationTransition(float duration, GameObject affected, float target, TransitionType type, RunOnDisable run, bool callSaftey = true)
         {
-            this.affected = affected;
-            this.duration = duration;
+            Affected = affected;
+            Duration = duration;
             this.target = target;
-            owner = affected;
-            startingValue = owner.rotation;
+            startingValue = Affected.rotation;
             transitionType = type;
             callSafteyNet = callSaftey;
             CallOnDisable = run;
@@ -43,11 +40,10 @@ namespace ARPG
         #region Cross fade transition
         public RotationTransition(float duration, GameObject affected, float target, TransitionType start, TransitionType end, RunOnDisable run, bool callSaftey = true)
         {
-            this.affected = affected;
-            this.duration = duration;
+            Affected = affected;
+            Duration = duration;
             this.target = target;
-            owner = affected;
-            startingValue = owner.rotation;
+            startingValue = Affected.rotation;
             transitionStart = start;
             transitionEnd = end;
             callSafteyNet = callSaftey;
@@ -58,20 +54,23 @@ namespace ARPG
         #region Sin Curve
         public RotationTransition(float duration, GameObject affected, float target, float repetitions, float amplitude, bool returnToStart, RunOnDisable run)
         {
-            this.affected = affected;
-            this.duration = duration;
+            Affected = affected;
+            Duration = duration;
             this.target = target;
-            owner = affected;
-            startingValue = owner.rotation;
+            startingValue = Affected.rotation;
             transitionType = TransitionType.SinCurve;
             this.repetitions = repetitions;
             this.amplitude = amplitude;
-            this.returnToStart = returnToStart;
             CallOnDisable = run;
 
             if (returnToStart)
             {
                 CallOnDisable += ReturnToOriginalRotation;
+            }
+
+            if (Library.cameraInstance != null && affected == Library.cameraInstance)
+            {
+
             }
         }
         #endregion
@@ -80,7 +79,7 @@ namespace ARPG
         {
             float t = 0;
 
-            if (affected != null)
+            if (Affected != null)
             {
                 if (transitionType != null)
                 {
@@ -88,25 +87,25 @@ namespace ARPG
                     switch (transitionType)
                     {
                         case TransitionType.SmoothStart2:
-                            t = TransitionSystem.SmoothStart2(timer / duration);
+                            t = TransitionSystem.SmoothStart2(timer / Duration);
                             break;
                         case TransitionType.SmoothStart3:
-                            t = TransitionSystem.SmoothStart3(timer / duration);
+                            t = TransitionSystem.SmoothStart3(timer / Duration);
                             break;
                         case TransitionType.SmoothStart4:
-                            t = TransitionSystem.SmoothStart4(timer / duration);
+                            t = TransitionSystem.SmoothStart4(timer / Duration);
                             break;
                         case TransitionType.SmoothStop2:
-                            t = TransitionSystem.SmoothStop2(timer / duration);
+                            t = TransitionSystem.SmoothStop2(timer / Duration);
                             break;
                         case TransitionType.SmoothStop3:
-                            t = TransitionSystem.SmoothStop3(timer / duration);
+                            t = TransitionSystem.SmoothStop3(timer / Duration);
                             break;
                         case TransitionType.SmoothStop4:
-                            t = TransitionSystem.SmoothStop4(timer / duration);
+                            t = TransitionSystem.SmoothStop4(timer / Duration);
                             break;
                         case TransitionType.SinCurve:
-                            t = TransitionSystem.SinCurve(amplitude, timer / duration);
+                            t = TransitionSystem.SinCurve(amplitude, timer / Duration);
                             break;
                         default:
                             break;
@@ -121,13 +120,13 @@ namespace ARPG
                     switch (transitionStart)
                     {
                         case TransitionType.SmoothStart2:
-                            t = TransitionSystem.SmoothStop2(timer / duration);
+                            t = TransitionSystem.SmoothStop2(timer / Duration);
                             break;
                         case TransitionType.SmoothStart3:
-                            t = TransitionSystem.SmoothStop3(timer / duration);
+                            t = TransitionSystem.SmoothStop3(timer / Duration);
                             break;
                         case TransitionType.SmoothStart4:
-                            t = TransitionSystem.SmoothStop4(timer / duration);
+                            t = TransitionSystem.SmoothStop4(timer / Duration);
                             break;
                         default:
                             break;
@@ -136,23 +135,23 @@ namespace ARPG
                     switch (transitionEnd)
                     {
                         case TransitionType.SmoothStop2:
-                            t2 = TransitionSystem.SmoothStop2(timer / duration);
+                            t2 = TransitionSystem.SmoothStop2(timer / Duration);
                             break;
                         case TransitionType.SmoothStop3:
-                            t2 = TransitionSystem.SmoothStop3(timer / duration);
+                            t2 = TransitionSystem.SmoothStop3(timer / Duration);
                             break;
                         case TransitionType.SmoothStop4:
-                            t2 = TransitionSystem.SmoothStop4(timer / duration);
+                            t2 = TransitionSystem.SmoothStop4(timer / Duration);
                             break;
                         default:
                             break;
                     }
                     #endregion
 
-                    t = TransitionSystem.Crossfade(t, t2, timer / duration);
+                    t = TransitionSystem.Crossfade(t, t2, timer / Duration);
                 }
 
-                affected.rotation = MathHelper.Lerp(startingValue, target + startingValue, t);
+                Affected.rotation = MathHelper.Lerp(startingValue, target + startingValue, t);
             }
 
             base.Update(gameTime);
@@ -160,19 +159,19 @@ namespace ARPG
 
         private void ReturnToOriginalRotation()
         {
-            TransitionSystem.transitions.Add(new RotationTransition(duration, Library.cameraInstance, startingValue + target, TransitionType.SmoothStop2, ResetRotation, false));
+            TransitionSystem.transitions.Add(new RotationTransition(Duration, Library.cameraInstance, startingValue + target, TransitionType.SmoothStop2, ResetRotation, false));
         }
 
         private void ResetRotation()
         {
-            affected.rotation = 0;
+            Affected.rotation = 0;
         }
 
         public override void SafteyNet()
         {
             if (transitionType != TransitionType.SinCurve && callSafteyNet)
             {
-                affected.rotation = target + startingValue;
+                Affected.rotation = target + startingValue;
             }
         }
     }

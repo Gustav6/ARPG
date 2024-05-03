@@ -9,22 +9,22 @@ namespace ARPG
 {
     public abstract class Transition
     {
-        public GameObject owner;
+        public GameObject Affected { get; protected set; }
 
         public delegate void RunOnDisable();
         public RunOnDisable CallOnDisable { get; protected set; }
+        public float Duration { get; protected set; }
 
         public bool isRemoved;
 
         public float timer;
-        public float duration;
 
 
         public virtual void Update(GameTime gameTime)
         {
             timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (timer > duration)
+            if (timer > Duration)
             {
                 isRemoved = true;
             }
