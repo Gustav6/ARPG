@@ -12,9 +12,12 @@ namespace ARPG
 {
     public static class GameManager
     {
+        public static bool showFps = true;
+
         public static void Initialize(GraphicsDevice graphics)
         {
             Library.playerInstance = new Player(new Vector2(0, 0));
+
             Library.cameraInstance = new Camera(graphics.Viewport, Library.playerInstance);
 
             Library.tileMap.GenerateNewMap();
@@ -33,7 +36,7 @@ namespace ARPG
 
         public static void Update(GameTime gameTime)
         {
-            InputController.GetInput();
+            InputManager.GetInput();
             TransitionSystem.Update(gameTime);
 
             for (int i = 0; i < Library.gameObjects.Count; i++)
@@ -54,16 +57,16 @@ namespace ARPG
             {
                 //Library.tileMap.GenerateNewMap();
 
-                Library.cameraInstance.ScreenShake(0.15f, 0.045f);
+                Library.cameraInstance.ScreenShake(0.125f, 0.0085f);
             }
 
             if (KeyboardInput.IsPressed(Keys.F1))
             {
-                Library.cameraInstance.Zoom -= 0.1f;
+                Library.cameraInstance.Zoom -= 0.1f * Library.cameraInstance.Zoom;
             }
             if (KeyboardInput.IsPressed(Keys.F2))
             {
-                Library.cameraInstance.Zoom += 0.1f;
+                Library.cameraInstance.Zoom += 0.1f * Library.cameraInstance.Zoom;
             }
         }
 

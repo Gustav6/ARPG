@@ -6,14 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ARPG.Scripts.Input
+namespace ARPG
 {
     public class MouseInput
     {
         public static MouseState currentState;
         public static MouseState prevState;
 
-        public void SetMouseStates()
+        public static void SetMouseStates()
         {
             prevState = currentState;
             currentState = Mouse.GetState();

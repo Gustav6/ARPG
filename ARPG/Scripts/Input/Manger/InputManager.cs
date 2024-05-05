@@ -7,15 +7,14 @@ using System.Threading.Tasks;
 
 namespace ARPG
 {
-    public static class InputController
+    public static class InputManager
     {
-        private static readonly KeyboardInput keyboard = new();
-        private static readonly MouseInput mouse = new();
+        public static bool ControllerActive { get; private set; }
 
         public static void GetInput()
         {
-            keyboard.SetKeyboardStates();
-            mouse.SetMouseStates();
+            KeyboardInput.SetKeyboardStates();
+            MouseInput.SetMouseStates();
         }
     }
 }

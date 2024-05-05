@@ -16,6 +16,7 @@ namespace ARPG
         public float Duration { get; protected set; }
 
         public bool isRemoved;
+        protected bool canRemove;
 
         public float timer;
 
@@ -30,7 +31,7 @@ namespace ARPG
             }
         }
 
-        public virtual void SafteyNet()
+        public virtual void SafetyNet()
         {
 
         }

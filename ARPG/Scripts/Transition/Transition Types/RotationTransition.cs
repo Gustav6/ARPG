@@ -21,7 +21,7 @@ namespace ARPG
         private float startingValue;
         private float target;
 
-        private bool callSafteyNet;
+        private bool callSafetyNet;
 
 
         #region Normal transition
@@ -32,7 +32,7 @@ namespace ARPG
             this.target = target;
             startingValue = Affected.rotation;
             transitionType = type;
-            callSafteyNet = callSaftey;
+            callSafetyNet = callSaftey;
             CallOnDisable = run;
         }
         #endregion
@@ -46,37 +46,30 @@ namespace ARPG
             startingValue = Affected.rotation;
             transitionStart = start;
             transitionEnd = end;
-            callSafteyNet = callSaftey;
+            callSafetyNet = callSaftey;
             CallOnDisable = run;
         }
         #endregion
 
         #region Sin Curve
-        public RotationTransition(float duration, GameObject affected, float target, float repetitions, float amplitude, bool returnToStart, RunOnDisable run)
+        public RotationTransition(float duration, GameObject affected, float repetitions, float amplitude, RunOnDisable run)
         {
             Affected = affected;
             Duration = duration;
-            this.target = target;
             startingValue = Affected.rotation;
             transitionType = TransitionType.SinCurve;
             this.repetitions = repetitions;
             this.amplitude = amplitude;
             CallOnDisable = run;
 
-            if (returnToStart)
-            {
-                CallOnDisable += ReturnToOriginalRotation;
-            }
-
-            if (Library.cameraInstance != null && affected == Library.cameraInstance)
-            {
-
-            }
+            CallOnDisable += ResetRotation;
         }
         #endregion
 
         public override void Update(GameTime gameTime)
         {
+            base.Update(gameTime);
+
             float t = 0;
 
             if (Affected != null)
@@ -105,7 +98,7 @@ namespace ARPG
                             t = TransitionSystem.SmoothStop4(timer / Duration);
                             break;
                         case TransitionType.SinCurve:
-                            t = TransitionSystem.SinCurve(amplitude, timer / Duration);
+                            t = TransitionSystem.SinCurve(repetitions, amplitude, timer / Duration);
                             break;
                         default:
                             break;
@@ -150,16 +143,16 @@ namespace ARPG
 
                     t = TransitionSystem.Crossfade(t, t2, timer / Duration);
                 }
-
-                Affected.rotation = MathHelper.Lerp(startingValue, target + startingValue, t);
             }
 
-            base.Update(gameTime);
-        }
-
-        private void ReturnToOriginalRotation()
-        {
-            TransitionSystem.transitions.Add(new RotationTransition(Duration, Library.cameraInstance, startingValue + target, TransitionType.SmoothStop2, ResetRotation, false));
+            if (transitionType == TransitionType.SinCurve)
+            {
+                Affected.rotation = t + startingValue;
+            }
+            else
+            {
+                Affected.rotation = MathHelper.Lerp(startingValue, target + startingValue, t);
+            }
         }
 
         private void ResetRotation()
@@ -167,9 +160,9 @@ namespace ARPG
             Affected.rotation = 0;
         }
 
-        public override void SafteyNet()
+        public override void SafetyNet()
         {
-            if (transitionType != TransitionType.SinCurve && callSafteyNet)
+            if (transitionType != TransitionType.SinCurve && callSafetyNet)
             {
                 Affected.rotation = target + startingValue;
             }

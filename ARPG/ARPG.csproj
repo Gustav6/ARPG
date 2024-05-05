@@ -11,6 +11,11 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Scripts\Procedural Generation\**" />
+    <EmbeddedResource Remove="Scripts\Procedural Generation\**" />
+    <None Remove="Scripts\Procedural Generation\**" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
   </ItemGroup>
@@ -25,7 +30,6 @@
   <ItemGroup>
     <Folder Include="Scripts\Interfaces\" />
     <Folder Include="Scripts\Save System\" />
-    <Folder Include="Scripts\Procedural Generation\" />
     <Folder Include="Scripts\Weapons\Melee\" />
     <Folder Include="Scripts\Weapons\Ranged\" />
   </ItemGroup>

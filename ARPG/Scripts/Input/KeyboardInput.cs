@@ -24,7 +24,7 @@ namespace ARPG
 
         #endregion
 
-        public void SetKeyboardStates()
+        public static void SetKeyboardStates()
         {
             prevState = currentState;
             currentState = Keyboard.GetState();

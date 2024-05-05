@@ -41,7 +41,7 @@ namespace ARPG
             Font = content.Load<SpriteFont>("spritefont");
         }
 
-        private static Texture2D CreateTexture(int width, int height, Func<int, Color> paint)
+        public static Texture2D CreateTexture(int width, int height, Func<int, Color> paint)
         {
             Texture2D texture = new(graphicsDevice, width, height);
 
@@ -71,7 +71,7 @@ namespace ARPG
     public enum TileTextures
     {
         passable,
-        unPassable
+        unPassable,
     }
 
     public enum SpriteLayer
@@ -79,5 +79,6 @@ namespace ARPG
         Default,    
         Enemy,
         Player,
+        GUI
     }
 }

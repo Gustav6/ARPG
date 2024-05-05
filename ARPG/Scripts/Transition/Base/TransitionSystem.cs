@@ -31,7 +31,7 @@ namespace ARPG
                 else if (transitions[i].isRemoved)
                 {
                     transitions[i].CallOnDisable?.Invoke();
-                    transitions[i].SafteyNet();
+                    transitions[i].SafetyNet();
                     transitions.RemoveAt(i);
                 }
             }
@@ -47,9 +47,9 @@ namespace ARPG
             transitions.Add(new RotationTransition(duration, affected, target, start, end, callOnDisable));
         }
 
-        public static void SINTransition(float duration, GameObject affected, float target, float repetitions, float amplitude, bool returnToOriginl = false, RunOnDisable callOnDisable = null)
+        public static void SINTransition(float duration, GameObject affected, float repetitions, float amplitude, RunOnDisable callOnDisable = null)
         {
-            transitions.Add(new RotationTransition(duration, affected, target, repetitions, amplitude, returnToOriginl, callOnDisable));
+            transitions.Add(new RotationTransition(duration, affected, repetitions, amplitude, callOnDisable));
         }
         #endregion
 
@@ -82,9 +82,10 @@ namespace ARPG
         {
             return 1 - (1 - t) * (1 - t) * (1 - t) * (1 - t);
         }
-        public static float SinCurve(float amplitude, float t)
+        public static float SinCurve(float repetitions,float amplitude, float t)
         {
-            return MathF.Sin(t * MathF.PI * (MathF.PI / 2)) * amplitude;
+            //return MathF.Sin(t * MathF.PI * repetitions) * amplitude;
+            return MathF.Sin(t * MathF.PI * repetitions) * amplitude;
         }
 
         public static float Crossfade(float transitionStart, float transitionEnd, float t)
