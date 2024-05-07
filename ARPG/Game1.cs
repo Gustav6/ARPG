@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace ARPG
 {
@@ -51,13 +52,13 @@ namespace ARPG
 
             _spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, null, null, null, null, Library.cameraInstance.Transform);
 
-            if (GameManager.showFps)
+            if (UIManager.showFps)
             {
-                float frameRate = 1 / (float)gameTime.ElapsedGameTime.TotalSeconds;
+                float frameRate = MathF.Round(1 / (float)gameTime.ElapsedGameTime.TotalSeconds);
 
                 Vector2 position = new (Library.cameraInstance.X - 900, Library.cameraInstance.Y - 500);
 
-                _spriteBatch.DrawString(TextureManager.Font, frameRate.ToString(), position, Color.Green, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, (int)SpriteLayer.GUI);
+                _spriteBatch.DrawString(TextureManager.Font, "FPS : " + frameRate.ToString(), position, Color.Green, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, (int)SpriteLayer.GUI);
             }
 
             GameManager.Draw(_spriteBatch);

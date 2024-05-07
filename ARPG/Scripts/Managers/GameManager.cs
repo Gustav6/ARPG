@@ -12,8 +12,6 @@ namespace ARPG
 {
     public static class GameManager
     {
-        public static bool showFps = true;
-
         public static void Initialize(GraphicsDevice graphics)
         {
             Library.playerInstance = new Player(new Vector2(0, 0));
@@ -57,7 +55,7 @@ namespace ARPG
             {
                 //Library.tileMap.GenerateNewMap();
 
-                Library.cameraInstance.ScreenShake(0.125f, 0.0085f);
+                Library.cameraInstance.ScreenShake(0.125f, 0.0095f);
             }
 
             if (KeyboardInput.IsPressed(Keys.F1))

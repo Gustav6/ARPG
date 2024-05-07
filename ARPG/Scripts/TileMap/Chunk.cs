@@ -27,8 +27,8 @@ namespace ARPG
             {
                 for (int y = 0; y < tileMap.GetLength(1); y++)
                 {
-                    int xPosition = (x * (int)TileMap.tileSize) + (int)position.X;
-                    int yPosition = (y * (int)TileMap.tileSize) + (int)position.Y;
+                    int xPosition = (x * TileMap.tileSize) + (int)position.X;
+                    int yPosition = (y * TileMap.tileSize) + (int)position.Y;
 
                     Texture2D texture = TextureManager.TileTexturePairs[TileTextures.passable];
 
@@ -45,7 +45,7 @@ namespace ARPG
                     }
 
                     tileMap[x, y] = (new Tile(texture, new Vector2(xPosition, yPosition), 
-                        new Rectangle(xPosition, yPosition, (int)TileMap.tileSize, (int)TileMap.tileSize), 
+                        new Rectangle(xPosition, yPosition, TileMap.tileSize, TileMap.tileSize), 
                         TileType.passable));
 
                     tiles.Add(tileMap[x, y]);

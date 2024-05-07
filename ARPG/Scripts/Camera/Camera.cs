@@ -17,8 +17,8 @@ namespace ARPG
 
         private float zoom = 1;
 
-        private float maximumZoom = 3;
-        private float minimumZoom = 0.05f;
+        private readonly float maximumZoom = 3;
+        private readonly float minimumZoom = 0.05f;
         private const double rotationConstFor360 = Math.PI * 2;
         #endregion
 
@@ -80,7 +80,7 @@ namespace ARPG
                 center = new Vector2(target.Position.X, target.Position.Y);
             }
 
-            Transform =
+            Transform = 
                 Matrix.CreateTranslation(new Vector3(-center.X, -center.Y, 0)) *
                 Matrix.CreateRotationZ(Rotation) *
                 Matrix.CreateScale(new Vector3(Zoom, Zoom, 0)) * 

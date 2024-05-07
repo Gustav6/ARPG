@@ -11,19 +11,20 @@ namespace ARPG
     public class TileMap
     {
         #region Constant variables
-        public static int tileSize = 64;
+        public const int tileSize = 64;
         public List<Tile> tiles = new();
         public Tile[,] masterMap;
-        private Tile[,] currentRoom;
+        private Tile[,] tempRoom;
         #endregion
 
         #region Room generation variables
-        private int minRoomWidth = 20, minRoomHeight = 20, maxRoomWidth = 75, maxRoomHeight = 75;
+        private readonly int minRoomWidth = 20, minRoomHeight = 20, maxRoomWidth = 75, maxRoomHeight = 75;
 
         private int roomsLeft;
-        private int maximumAmountOfRooms = 15;
+        private readonly int maximumAmountOfRooms = 15;
 
         private List<Tile[,]> rooms = new();
+        private Tile[,] currentRoom;
         #endregion
 
         public int tileMapWidth = 350;
@@ -116,11 +117,11 @@ namespace ARPG
 
         private Tile[,] GenerateARoom(int width, int height, int xPos, int yPos)
         {
-            currentRoom = new Tile[width, height];
+            tempRoom = new Tile[width, height];
 
-            for (int x = 0; x < currentRoom.GetLength(0); x++)
+            for (int x = 0; x < tempRoom.GetLength(0); x++)
             {
-                for (int y = 0; y < currentRoom.GetLength(1); y++)
+                for (int y = 0; y < tempRoom.GetLength(1); y++)
                 {
                     float xPosition = x * tileSize + xPos * tileSize;
                     float yPosition = y * tileSize + yPos * tileSize;
@@ -128,17 +129,17 @@ namespace ARPG
                     Texture2D texture = TextureManager.TileTexturePairs[TileTextures.passable];
                     TileType type = TileType.passable;
 
-                    if (x == 0  || x == currentRoom.GetLength(0) - 1 || y == 0 || y == currentRoom.GetLength(1) - 1)
+                    if (x == 0  || x == tempRoom.GetLength(0) - 1 || y == 0 || y == tempRoom.GetLength(1) - 1)
                     {
                         texture = TextureManager.TileTexturePairs[TileTextures.unPassable];
                         type = TileType.unPassable;
                     }
 
-                    currentRoom[x, y] = new Tile(texture, new Vector2(xPosition, yPosition), new Rectangle((int)xPosition, (int)yPosition, tileSize, tileSize), type);
+                    tempRoom[x, y] = new Tile(texture, new Vector2(xPosition, yPosition), new Rectangle((int)xPosition, (int)yPosition, tileSize, tileSize), type);
                 }
             }
 
-            return currentRoom;
+            return tempRoom;
         }
         #endregion
 
@@ -161,15 +162,15 @@ namespace ARPG
                 {
                     float randomNum = (float)Library.rng.NextDouble();
 
-                    TileTextures type;
+                    //TileTextures type;
 
                     if (randomNum > 0.75f)
                     {
-                        type = TileTextures.unPassable;
+                        //type = TileTextures.unPassable;
                     }
                     else
                     {
-                        type = TileTextures.passable;
+                        //type = TileTextures.passable;
                     }
 
                     //noiseTiles[x, y] = new NoiseTile(new Vector2(x * tileSize, y * tileSize), type);

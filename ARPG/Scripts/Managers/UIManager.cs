@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace ARPG
 {
-    public class UIManager
+    public static class UIManager
     {
+        public static bool showFps = true;
+
     }
 }
