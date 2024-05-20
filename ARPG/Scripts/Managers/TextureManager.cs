@@ -13,10 +13,12 @@ namespace ARPG
     {
         private static GraphicsDevice graphicsDevice;
 
+        public static readonly int tileSize = 64;
         public static SpriteFont Font { get; private set; }
 
         public static Dictionary <Textures, Texture2D> TexturePairs { get; private set; }
         public static Dictionary<TileTextures, Texture2D> TileTexturePairs { get; private set; }
+        public static Dictionary<SpriteLayer, float> SpriteLayers { get; private set; }
 
 
         public static void LoadTextures(ContentManager content, GraphicsDevice _graphicsDevice)
@@ -34,8 +36,15 @@ namespace ARPG
                 //{ TileTextures.passable, content.Load<Texture2D>("") },
                 //{ TileTextures.unPassable, content.Load<Texture2D>("") }
 
-                { TileTextures.passable, CreateTexture(64, 64, pixel => Color.White) },
-                { TileTextures.unPassable, CreateTexture(64, 64, pixel => Color.Black) }
+                { TileTextures.passable, CreateTexture(tileSize, tileSize, pixel => Color.White) },
+                { TileTextures.unPassable, CreateTexture(tileSize, tileSize, pixel => Color.Black) }
+            };
+
+            SpriteLayers = new Dictionary<SpriteLayer, float>
+            {
+                { SpriteLayer.Default, 0 },
+                { SpriteLayer.Enemy, 0.1f },
+                { SpriteLayer.Player, 0.2f },
             };
 
             Font = content.Load<SpriteFont>("spritefont");
@@ -79,6 +88,5 @@ namespace ARPG
         Default,    
         Enemy,
         Player,
-        GUI
     }
 }

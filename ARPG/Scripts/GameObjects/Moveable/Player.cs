@@ -16,7 +16,7 @@ namespace ARPG
             #region Starting variables
             Position = startingPosition;
             texture = TextureManager.TexturePairs[Textures.playerTexture];
-            spriteLayer = (int)SpriteLayer.Player;
+            spriteLayer = TextureManager.SpriteLayers[SpriteLayer.Player];
             movementSpeed = 800;
             #endregion
 

@@ -52,16 +52,20 @@ namespace ARPG
 
             _spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, null, null, null, null, Library.cameraInstance.Transform);
 
+            GameManager.Draw(_spriteBatch);
+
+            _spriteBatch.End();
+
+            _spriteBatch.Begin();
+
             if (UIManager.showFps)
             {
                 float frameRate = MathF.Round(1 / (float)gameTime.ElapsedGameTime.TotalSeconds);
 
-                Vector2 position = new (Library.cameraInstance.X - 900, Library.cameraInstance.Y - 500);
+                Vector2 position = new(Library.cameraInstance.X + 75, Library.cameraInstance.Y + 50);
 
-                _spriteBatch.DrawString(TextureManager.Font, "FPS : " + frameRate.ToString(), position, Color.Green, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, (int)SpriteLayer.GUI);
+                _spriteBatch.DrawString(TextureManager.Font, "FPS : " + frameRate.ToString(), position, Color.Green, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, 0);
             }
-
-            GameManager.Draw(_spriteBatch);
 
             _spriteBatch.End();
 

@@ -15,7 +15,7 @@ namespace ARPG
         protected Color color = Color.White;
         protected Vector2 scale = Vector2.One;
         protected Vector2 origin;
-        protected float spriteLayer = (int)SpriteLayer.Default;
+        protected float spriteLayer = TextureManager.SpriteLayers[SpriteLayer.Default];
         public float rotation = 0;
         public Rectangle source;
         #endregion

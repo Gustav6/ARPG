@@ -11,139 +11,20 @@ namespace ARPG
     public class TileMap
     {
         #region Constant variables
-        public const int tileSize = 64;
         public List<Tile> tiles = new();
         public Tile[,] masterMap;
-        private Tile[,] tempRoom;
         #endregion
 
-        #region Room generation variables
-        private readonly int minRoomWidth = 20, minRoomHeight = 20, maxRoomWidth = 75, maxRoomHeight = 75;
-
-        private int roomsLeft;
-        private readonly int maximumAmountOfRooms = 15;
-
-        private List<Tile[,]> rooms = new();
-        private Tile[,] currentRoom;
-        #endregion
-
-        public int tileMapWidth = 350;
-        public int tileMapHeight = 350;
-
-        #region Room procedural generation
+        public readonly int tileMapWidth = 350;
+        public readonly int tileMapHeight = 350;
 
         public void GenerateNewMap()
         {
             tiles.Clear();
             masterMap = new Tile[tileMapWidth, tileMapHeight];
 
-            #region Call room generation
-            roomsLeft = maximumAmountOfRooms;
-            PlaceRooms();
-            #endregion
+            GenerateRooms.CallGeneration();
         }
-        // To place corridors follow https://www.youtube.com/watch?v=rBY2Dzej03A&t=14s
-
-        private void PlaceRooms()
-        {
-            while (roomsLeft > 0)
-            {
-                #region Random Variables
-                int width = Library.rng.Next(minRoomWidth, maxRoomWidth);
-                int height = Library.rng.Next(minRoomHeight, maxRoomHeight);
-                int xPosition = Library.rng.Next(0, tileMapWidth - width);
-                int yPosition = Library.rng.Next(0, tileMapHeight - height);
-                #endregion
-
-                int triesRemaining = 3;
-
-                while (triesRemaining > 0 && roomsLeft > 0)
-                {
-                    Tile[,] currentRoom = GenerateARoom(width, height, xPosition, yPosition);
-
-                    if (CanRoomBePlaced(xPosition, yPosition, currentRoom))
-                    {
-                        PlaceRoomOnTileMap(xPosition, yPosition, currentRoom);
-
-                        if (Library.playerInstance != null && roomsLeft == maximumAmountOfRooms)
-                        {
-                            Vector2 newPlayerPos = new (xPosition + width / 2, yPosition + height / 2);
-                            newPlayerPos *= tileSize;
-
-                            Library.playerInstance.Position = newPlayerPos;
-                        }
-
-                        roomsLeft--;
-                    }
-                    else
-                    {
-                        triesRemaining--;
-                    }
-                }
-            }
-        }
-
-        #region Room Generation
-        private bool CanRoomBePlaced(int xPosition, int yPosition,Tile[,] room)
-        {
-            for (int x = 0; x < room.GetLength(0); x++)
-            {
-                for (int y = 0; y < room.GetLength(1); y++)
-                {
-                    if (masterMap[x + xPosition, y + yPosition] != null)
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
-        }
-
-        private void PlaceRoomOnTileMap(int xPosition, int yPosition, Tile[,] room)
-        {
-            for (int x = 0; x < room.GetLength(0); x++)
-            {
-                for (int y = 0; y < room.GetLength(1); y++)
-                {
-                    masterMap[x + xPosition, y + yPosition] = room[x, y];
-
-                    tiles.Add(masterMap[x + xPosition, y + yPosition]);
-                }
-            }
-
-            rooms.Add(room);
-        }
-
-        private Tile[,] GenerateARoom(int width, int height, int xPos, int yPos)
-        {
-            tempRoom = new Tile[width, height];
-
-            for (int x = 0; x < tempRoom.GetLength(0); x++)
-            {
-                for (int y = 0; y < tempRoom.GetLength(1); y++)
-                {
-                    float xPosition = x * tileSize + xPos * tileSize;
-                    float yPosition = y * tileSize + yPos * tileSize;
-
-                    Texture2D texture = TextureManager.TileTexturePairs[TileTextures.passable];
-                    TileType type = TileType.passable;
-
-                    if (x == 0  || x == tempRoom.GetLength(0) - 1 || y == 0 || y == tempRoom.GetLength(1) - 1)
-                    {
-                        texture = TextureManager.TileTexturePairs[TileTextures.unPassable];
-                        type = TileType.unPassable;
-                    }
-
-                    tempRoom[x, y] = new Tile(texture, new Vector2(xPosition, yPosition), new Rectangle((int)xPosition, (int)yPosition, tileSize, tileSize), type);
-                }
-            }
-
-            return tempRoom;
-        }
-        #endregion
-
-        #endregion
 
         #region Perlin noise generation
 

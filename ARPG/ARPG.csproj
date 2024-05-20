@@ -11,11 +11,6 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Scripts\Procedural Generation\**" />
-    <EmbeddedResource Remove="Scripts\Procedural Generation\**" />
-    <None Remove="Scripts\Procedural Generation\**" />
-  </ItemGroup>
-  <ItemGroup>
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
   </ItemGroup>

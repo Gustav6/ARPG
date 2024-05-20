@@ -22,8 +22,8 @@ namespace ARPG
         private const double rotationConstFor360 = Math.PI * 2;
         #endregion
 
-        public float X { get { return center.X; } }
-        public float Y { get { return center.Y; } }
+        public float X { get { return Position.X; } }
+        public float Y { get { return Position.Y; } }
 
         public GameObject target;
 
