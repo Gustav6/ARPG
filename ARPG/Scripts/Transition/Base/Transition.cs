@@ -9,13 +9,11 @@ namespace ARPG
 {
     public abstract class Transition
     {
-        public GameObject Affected { get; protected set; }
-
         public delegate void RunOnDisable();
         public RunOnDisable CallOnDisable { get; protected set; }
         public float Duration { get; protected set; }
+        public bool IsRemoved { get; private set; }
 
-        public bool isRemoved;
         protected bool canRemove;
 
         public float timer;
@@ -25,10 +23,15 @@ namespace ARPG
         {
             timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (timer > Duration)
+            if (timer >= Duration)
             {
-                isRemoved = true;
+                IsRemoved = true;
             }
+        }
+
+        public void RemoveTransition()
+        {
+            IsRemoved = true;
         }
 
         public virtual void SafetyNet()

@@ -11,8 +11,8 @@ namespace ARPG
     public class TileMap
     {
         #region Constant variables
-        public List<Tile> tiles = new();
         public Tile[,] masterMap;
+        public List<Room> rooms = new();
         #endregion
 
         public readonly int tileMapWidth = 350;
@@ -20,76 +20,30 @@ namespace ARPG
 
         public void GenerateNewMap()
         {
-            tiles.Clear();
-            masterMap = new Tile[tileMapWidth, tileMapHeight];
-
-            GenerateRooms.CallGeneration();
-        }
-
-        #region Perlin noise generation
-
-        public void Map()
-        {
-            GenerateNoiseMap(64, 64);
-        }
-
-        private void GenerateNoiseMap(int width, int height)
-        {
-            //noiseTiles = new NoiseTile[width, height];
-
-            for (int y = 0; y < height; y++)
+            if (Library.activeRoom != null)
             {
-                for (int x = 0; x < width; x++)
+                for (int i = Library.gameObjects.Count - 1; i >= 0; i--)
                 {
-                    float randomNum = (float)Library.rng.NextDouble();
-
-                    //TileTextures type;
-
-                    if (randomNum > 0.75f)
+                    if (Library.gameObjects[i] != Library.playerInstance)
                     {
-                        //type = TileTextures.unPassable;
+                        Library.gameObjects[i].Destroy();
                     }
-                    else
-                    {
-                        //type = TileTextures.passable;
-                    }
-
-                    //noiseTiles[x, y] = new NoiseTile(new Vector2(x * tileSize, y * tileSize), type);
                 }
             }
 
-            // Might help
-            //noiseTiles = GameOfLife.Smoothing(noiseTiles);
+            rooms.Clear();
+            Library.activeRoom = null;
+            masterMap = new Tile[tileMapWidth, tileMapHeight];
+
+            RoomGeneration.CallGeneration();
         }
-
-        private Vector2 RandomVector(Vector2 corner)
-        {
-            return new Vector2(Library.rng.Next(-1, 1) + corner.X, Library.rng.Next(-1, 1) + corner.Y);
-        }
-
-        private float PerlinNoise(float x, float y)
-        {
-
-            return 1;
-        }
-
-        #endregion
-
 
         public void DrawMap(SpriteBatch spriteBatch)
         {
-            for (int i = 0; i < tiles.Count; i++)
+            for (int i = 0; i < rooms.Count; i++)
             {
-                tiles[i].Draw(spriteBatch);
+                rooms[i].Draw(spriteBatch);
             }
-
-            //for (int x = 0; x < noiseTiles.GetLength(0); x++)
-            //{
-            //    for (int y = 0; y < noiseTiles.GetLength(1); y++)
-            //    {
-            //        noiseTiles[x, y].Draw(spriteBatch);
-            //    }
-            //}
         }
     }
 }

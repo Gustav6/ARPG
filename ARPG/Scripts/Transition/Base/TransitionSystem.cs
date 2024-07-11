@@ -10,44 +10,55 @@ namespace ARPG
 {
     public static class TransitionSystem
     {
-        public static List<Transition> transitions = new();
+        private static List<Transition> transitions = new();
 
         public static void Update(GameTime gameTime)
         {
             for (int i = 0; i < transitions.Count; i++)
             {
-                if (transitions[i].Affected != null)
+                try
                 {
                     transitions[i].Update(gameTime);
+                }
+                catch (NullReferenceException)
+                {
+                    transitions[i].RemoveTransition();
+
+                    throw;
                 }
             }
 
             for (int i = transitions.Count - 1; i >= 0; i--)
             {
-                if (transitions[i].Affected == null)
+                try
                 {
-                    transitions.RemoveAt(i);
+                    if (transitions[i].IsRemoved)
+                    {
+                        transitions[i].CallOnDisable?.Invoke();
+                        transitions[i].SafetyNet();
+                        transitions.RemoveAt(i);
+                    }
                 }
-                else if (transitions[i].isRemoved)
+                catch (NullReferenceException)
                 {
-                    transitions[i].CallOnDisable?.Invoke();
-                    transitions[i].SafetyNet();
                     transitions.RemoveAt(i);
+
+                    throw;
                 }
             }
         }
 
         #region Rotation Transitions
-        public static void RotationTransition(float duration, GameObject affected, float target, TransitionType type, RunOnDisable callOnDisable = null)
+        public static void RotationTransition(float duration, IRotatable affected, float target, TransitionType type, RunOnDisable callOnDisable = null)
         {
             transitions.Add(new RotationTransition(duration, affected, target, type, callOnDisable));
         }
-        public static void CrossFadeRotationTransition(float duration, GameObject affected, float target, TransitionType start, TransitionType end, RunOnDisable callOnDisable = null)
+        public static void CrossFadeRotationTransition(float duration, IRotatable affected, float target, TransitionType start, TransitionType end, RunOnDisable callOnDisable = null)
         {
             transitions.Add(new RotationTransition(duration, affected, target, start, end, callOnDisable));
         }
 
-        public static void SINTransition(float duration, GameObject affected, float repetitions, float amplitude, RunOnDisable callOnDisable = null)
+        public static void SINTransition(float duration, IRotatable affected, float repetitions, float amplitude, RunOnDisable callOnDisable = null)
         {
             transitions.Add(new RotationTransition(duration, affected, repetitions, amplitude, callOnDisable));
         }

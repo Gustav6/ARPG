@@ -8,28 +8,51 @@ using System.Threading.Tasks;
 
 namespace ARPG
 {
-    public class Projectile : Moveable
+    public class Projectile : Moveable, ICollidable
     {
-        private GameObject ownerOfProjectile;
+        public Entity ownerOfProjectile;
+        private ProjectileType type;
         private float lifeSpan;
+        private float damage;
+        private float knockbackStrength;
 
-        public Projectile(Texture2D texture, Vector2 position, Vector2 direction, float lifeSpan, GameObject owner)
+        private Rectangle hitbox;
+        public Rectangle BoundingBox
+        {
+            get { return hitbox; }
+            set { hitbox = value; }
+        }
+
+        public Projectile(ProjectileType type, Vector2 position, float _damage, float _speed, float knockback = 5, float _lifeSpan = 5)
         {
             #region Starting variables
-            this.texture = texture;
             Position = position;
-            this.direction = direction;
-            this.lifeSpan = lifeSpan;
-            ownerOfProjectile = owner;
+            lifeSpan = _lifeSpan;
+            damage = _damage;
+            speed = _speed;
+            knockbackStrength = knockback;
             #endregion
 
-            SetOriginAndSource(texture);
+            #region Draw variables
+            texture = TextureManager.ProjectileTextures[type];
+            spriteLayer = TextureManager.SpriteLayers[SpriteLayer.Projectile];
+            #endregion
 
-            Start();
+            this.type = type;
+
+            hitbox = new Rectangle((int)Position.X, (int)Position.Y, texture.Width, texture.Height);
+        }
+
+        public override void CallOnEnable()
+        {
+            base.CallOnEnable();
         }
 
         public override void Update(GameTime gameTime)
         {
+            Move(gameTime);
+            SetHitboxPosition();
+
             if (lifeSpan <= 0)
             {
                 Destroy();
@@ -42,9 +65,33 @@ namespace ARPG
             base.Update(gameTime);
         }
 
+        private void SetHitboxPosition()
+        {
+            hitbox.Location = new Vector2(Position.X, Position.Y).ToPoint();
+        }
+
+        public void OnCollision(ICollidable source)
+        {
+            if (source == ownerOfProjectile) 
+                return;
+
+            if (source is IDamageable d)
+            {
+                d.ApplyDamage(damage);
+                d.ApplyKnockback(knockbackStrength, direction);
+                Destroy();
+            }
+        }
+
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
+            //spriteBatch.Draw(texture, hitbox.Location.ToVector2(), source, Color.Black * 0.5f, Rotation, origin, scale, spriteEffects, spriteLayer + 0.1f);
         }
+    }
+
+    public enum ProjectileType
+    {
+        Fireball,
     }
 }

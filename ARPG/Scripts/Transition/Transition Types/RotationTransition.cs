@@ -14,6 +14,7 @@ namespace ARPG
         private readonly TransitionType? transitionType;
         private readonly TransitionType transitionStart;
         private readonly TransitionType transitionEnd;
+        public IRotatable Rotatable { get; private set; }
 
         private float repetitions;
         private float amplitude;
@@ -25,12 +26,13 @@ namespace ARPG
 
 
         #region Normal transition
-        public RotationTransition(float duration, GameObject affected, float target, TransitionType type, RunOnDisable run, bool callSaftey = true)
+        public RotationTransition(float duration, IRotatable affected, float target, TransitionType type, RunOnDisable run, bool callSaftey = true)
         {
-            Affected = affected;
+            Rotatable = affected;
             Duration = duration;
+            startingValue = Rotatable.Rotation;
+
             this.target = target;
-            startingValue = Affected.rotation;
             transitionType = type;
             callSafetyNet = callSaftey;
             CallOnDisable = run;
@@ -38,12 +40,13 @@ namespace ARPG
         #endregion
 
         #region Cross fade transition
-        public RotationTransition(float duration, GameObject affected, float target, TransitionType start, TransitionType end, RunOnDisable run, bool callSaftey = true)
+        public RotationTransition(float duration, IRotatable affected, float target, TransitionType start, TransitionType end, RunOnDisable run, bool callSaftey = true)
         {
-            Affected = affected;
+            Rotatable = affected;
             Duration = duration;
+            startingValue = Rotatable.Rotation;
+
             this.target = target;
-            startingValue = Affected.rotation;
             transitionStart = start;
             transitionEnd = end;
             callSafetyNet = callSaftey;
@@ -52,11 +55,12 @@ namespace ARPG
         #endregion
 
         #region Sin Curve
-        public RotationTransition(float duration, GameObject affected, float repetitions, float amplitude, RunOnDisable run)
+        public RotationTransition(float duration, IRotatable affected, float repetitions, float amplitude, RunOnDisable run)
         {
-            Affected = affected;
+            Rotatable = affected;
             Duration = duration;
-            startingValue = Affected.rotation;
+            startingValue = Rotatable.Rotation;
+
             transitionType = TransitionType.SinCurve;
             this.repetitions = repetitions;
             this.amplitude = amplitude;
@@ -72,7 +76,7 @@ namespace ARPG
 
             float t = 0;
 
-            if (Affected != null)
+            if (Rotatable != null)
             {
                 if (transitionType != null)
                 {
@@ -147,24 +151,24 @@ namespace ARPG
 
             if (transitionType == TransitionType.SinCurve)
             {
-                Affected.rotation = t + startingValue;
+                Rotatable.SetRotation(t + startingValue);
             }
             else
             {
-                Affected.rotation = MathHelper.Lerp(startingValue, target + startingValue, t);
+                Rotatable.SetRotation(MathHelper.Lerp(startingValue, target + startingValue, t));
             }
         }
 
         private void ResetRotation()
         {
-            Affected.rotation = 0;
+            Rotatable.SetRotation(0);
         }
 
         public override void SafetyNet()
         {
             if (transitionType != TransitionType.SinCurve && callSafetyNet)
             {
-                Affected.rotation = target + startingValue;
+                Rotatable.SetRotation(target + startingValue);
             }
         }
     }

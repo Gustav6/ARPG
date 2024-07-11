@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ARPG.Scripts.Managers;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -12,31 +13,38 @@ namespace ARPG
 {
     public static class GameManager
     {
-        public static void Initialize(GraphicsDevice graphics)
+        private static float frameRate;
+
+        public static void Initialize()
         {
             Library.playerInstance = new Player(new Vector2(0, 0));
 
-            Library.cameraInstance = new Camera(graphics.Viewport, Library.playerInstance);
+            Library.cameraInstance = new Camera(TextureManager.graphicsDeviceManager.GraphicsDevice.Viewport, Library.playerInstance);
+
+            Library.AddGameObject(Library.playerInstance);
 
             Library.tileMap.GenerateNewMap();
-
-            Library.gameObjects = new List<GameObject>()
-            {
-                { Library.playerInstance },
-                { Library.cameraInstance }
-            };
         }
 
-        public static void LoadContent(ContentManager content, GraphicsDevice graphicsDevice)
+        public static void LoadContent(ContentManager content)
         {
-            TextureManager.LoadTextures(content, graphicsDevice);
+            TextureManager.LoadTextures(content);
         }
 
         public static void Update(GameTime gameTime)
         {
             InputManager.GetInput();
             TransitionSystem.Update(gameTime);
+            CollisionManager.Update();
 
+            Library.cameraInstance?.Update();
+
+            for (int i = 0; i < Library.timers.Count; i++)
+            {
+                Library.timers[i].Update(gameTime);
+            }
+
+            #region Loops for game objects
             for (int i = 0; i < Library.gameObjects.Count; i++)
             {
                 Library.gameObjects[i].Update(gameTime);
@@ -50,12 +58,42 @@ namespace ARPG
                     Library.gameObjects.RemoveAt(i);
                 }
             }
+            #endregion
+
+            #region Checks for active room
+            if (Library.activeRoom != null)
+            {
+                if (!Library.playerInstance.BoundingBox.Intersects(Library.activeRoom.bounds))
+                {
+                    if (!Library.activeRoom.hasExitedRoom)
+                    {
+                        Library.activeRoom.OnExitRoom();
+                    }
+
+                    for (int i = 0; i < Library.tileMap.rooms.Count; i++)
+                    {
+                        if (Library.playerInstance.BoundingBox.Intersects(Library.tileMap.rooms[i].bounds))
+                        {
+                            Library.activeRoom = Library.tileMap.rooms[i];
+                            Library.activeRoom.OnEnterRoom();
+                            break;
+                        }
+                    }
+                }
+                else if (Library.activeRoom.hasExitedRoom)
+                {
+                    Library.activeRoom.OnEnterRoom();
+                }
+            }
+            #endregion
+
+            #region Debug
+
+            frameRate = MathF.Round(1 / (float)gameTime.ElapsedGameTime.TotalSeconds);
 
             if (KeyboardInput.HasBeenPressed(Keys.Space))
             {
-                //Library.tileMap.GenerateNewMap();
-
-                Library.cameraInstance.ScreenShake(0.125f, 0.0095f);
+                Library.tileMap.GenerateNewMap();
             }
 
             if (KeyboardInput.IsPressed(Keys.F1))
@@ -66,16 +104,38 @@ namespace ARPG
             {
                 Library.cameraInstance.Zoom += 0.1f * Library.cameraInstance.Zoom;
             }
+            #endregion
         }
 
         public static void Draw(SpriteBatch spriteBatch)
         {
+            // Draw world and game objects
+            spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, null, null, null, null, Library.cameraInstance.Transform);
+
             Library.tileMap.DrawMap(spriteBatch);
+
+            if (Library.activeRoom != null)
+            {
+                //Library.activeRoom.Draw(spriteBatch);
+            }
 
             for (int i = 0; i < Library.gameObjects.Count; i++)
             {
                 Library.gameObjects[i].Draw(spriteBatch);
             }
+
+            spriteBatch.End();
+
+            // Draw the user interface
+            spriteBatch.Begin();
+
+            if (UIManager.showFps)
+            {
+                spriteBatch.DrawString(TextureManager.Font, "FPS : " + frameRate.ToString(), new Vector2(75, 50), Color.Green, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, TextureManager.SpriteLayers[SpriteLayer.UI]);
+                spriteBatch.DrawString(TextureManager.Font, Library.gameObjects.Count.ToString(), new Vector2(75, 100), Color.Green, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, TextureManager.SpriteLayers[SpriteLayer.UI]);
+            }
+
+            spriteBatch.End();
         }
     }
 }

@@ -8,22 +8,22 @@ using System.Threading.Tasks;
 
 namespace ARPG
 {
-    public class Camera : GameObject
+    public class Camera : IRotatable
     {
         #region Default variables
         public Matrix Transform { get; private set; }
         private Viewport viewport;
         private Vector2 center;
 
-        private float zoom = 1;
+        private float zoom;
 
         private readonly float maximumZoom = 3;
         private readonly float minimumZoom = 0.05f;
         private const double rotationConstFor360 = Math.PI * 2;
         #endregion
 
-        public float X { get { return Position.X; } }
-        public float Y { get { return Position.Y; } }
+        public float X { get { return center.X; } }
+        public float Y { get { return center.Y; } }
 
         public GameObject target;
 
@@ -49,6 +49,7 @@ namespace ARPG
             }
         }
 
+        private float rotation;
         public float Rotation
         {
             get { return rotation; }
@@ -71,9 +72,11 @@ namespace ARPG
         {
             viewport = _viewport;
             target = _target;
+            Zoom = 1;
+            Rotation = 0;
         }
 
-        public override void Update(GameTime gameTime)
+        public void Update()
         {
             if (target != null)
             {
@@ -83,15 +86,27 @@ namespace ARPG
             Transform = 
                 Matrix.CreateTranslation(new Vector3(-center.X, -center.Y, 0)) *
                 Matrix.CreateRotationZ(Rotation) *
-                Matrix.CreateScale(new Vector3(Zoom, Zoom, 0)) * 
+                Matrix.CreateScale(Zoom, Zoom, 1) * 
                 Matrix.CreateTranslation(new Vector3(viewport.Width / 2, viewport.Height / 2, 0));
+        }
+
+        public Vector2 ScreenToWorldSpace()
+        {
+            Vector2 relativeMousePos = Vector2.Transform(MouseInput.currentState.Position.ToVector2(), Matrix.Invert(Transform));
+
+            return relativeMousePos;
         }
 
         public void ScreenShake(float duration, float intensity)
         {
+            SetRotation(0);
+
             TransitionSystem.SINTransition(duration, this, 2, intensity * zoom);
         }
 
-        public override void Draw(SpriteBatch spriteBatch) { }
+        public void SetRotation(float newRotation)
+        {
+            Rotation = newRotation;
+        }
     }
 }

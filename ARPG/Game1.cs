@@ -7,33 +7,36 @@ namespace ARPG
 {
     public class Game1 : Game
     {
-        private GraphicsDeviceManager _graphics;
-        private SpriteBatch _spriteBatch;
+        private SpriteBatch spriteBatch;
+        public static Game1 Reference { get; private set; }
 
         public Game1()
         {
-            _graphics = new GraphicsDeviceManager(this)
+            Reference = this;
+
+            TextureManager.graphicsDeviceManager = new GraphicsDeviceManager(this)
             {
-                PreferredBackBufferHeight = Library.windowWidth,
                 PreferredBackBufferWidth = Library.windowHeight,
+                PreferredBackBufferHeight = Library.windowWidth,
                 //IsFullScreen = true,
             };
+
             Content.RootDirectory = "Content";
-            IsMouseVisible = true;
+            Library.EnableCursor();
         }
 
         protected override void Initialize()
         {
             base.Initialize();
 
-            GameManager.Initialize(GraphicsDevice);
+            GameManager.Initialize();
         }
 
         protected override void LoadContent()
         {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            GameManager.LoadContent(Content, GraphicsDevice);
+            GameManager.LoadContent(Content);
         }
 
         protected override void Update(GameTime gameTime)
@@ -50,24 +53,7 @@ namespace ARPG
         {
             GraphicsDevice.Clear(Color.Black);
 
-            _spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, null, null, null, null, Library.cameraInstance.Transform);
-
-            GameManager.Draw(_spriteBatch);
-
-            _spriteBatch.End();
-
-            _spriteBatch.Begin();
-
-            if (UIManager.showFps)
-            {
-                float frameRate = MathF.Round(1 / (float)gameTime.ElapsedGameTime.TotalSeconds);
-
-                Vector2 position = new(Library.cameraInstance.X + 75, Library.cameraInstance.Y + 50);
-
-                _spriteBatch.DrawString(TextureManager.Font, "FPS : " + frameRate.ToString(), position, Color.Green, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, 0);
-            }
-
-            _spriteBatch.End();
+            GameManager.Draw(spriteBatch);
 
             base.Draw(gameTime);
         }
