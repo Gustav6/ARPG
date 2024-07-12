@@ -13,9 +13,7 @@ namespace ARPG
 
         public Vector2 direction;
         protected float speed;
-        protected bool spriteCanFlip = true;
-
-        private float addForceTimer;
+        protected bool canFlip = true;
 
         public override void CallOnEnable()
         {
@@ -48,27 +46,27 @@ namespace ARPG
 
             direction.Normalize();
 
-            if (spriteCanFlip)
+            if (canFlip)
             {
                 FlipSprite(direction);
             }
 
-            Position += direction * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            SetPosition(Position + direction * speed * (float)gameTime.ElapsedGameTime.TotalSeconds);
         }
 
-        public Node GetNode(Rectangle hitbox)
+        public Node GetNode(Rectangle hitbox, Room room)
         {
             Node node = null;
 
-            if (Library.activeRoom != null)
+            if (room != null)
             {
-                for (int x = 0; x < Library.activeRoom.grid.GetLength(0); x++)
+                for (int x = 0; x < room.grid.GetLength(0); x++)
                 {
-                    for (int y = 0; y < Library.activeRoom.grid.GetLength(1); y++)
+                    for (int y = 0; y < room.grid.GetLength(1); y++)
                     {
-                        if (hitbox.Intersects(Library.activeRoom.grid[x, y].Hitbox))
+                        if (hitbox.Intersects(room.grid[x, y].Hitbox))
                         {
-                            node = Library.activeRoom.grid[x, y].node;
+                            node = room.grid[x, y].node;
                         }
                     }
                 }

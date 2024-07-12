@@ -10,149 +10,125 @@ using static ARPG.ActionTimer;
 
 namespace ARPG
 {
-    #region Base state
-    public abstract class EnemyBaseState
-    {
-        public abstract void EnterState(Enemy enemyReference);
-        public abstract void Update(GameTime gameTime);
-        public abstract void ExitState();
-    }
-    #endregion
-
     public abstract class Enemy : Entity, IDamageable
     {
         #region States
-        private EnemyBaseState currentState;
-
-        public EnemyIdleState idleState;
-        public EnemyWalkingState walkingState;
-        public EnemyHurtState hurtState;
-        #endregion
-
-        #region Health variables
-        public bool isDead = false;
-
-        protected float maxHealth;
-        protected float health;
-        public float Health
-        {
-            get
-            {
-                return health;
-            }
-
-            set
-            {
-                if (value < maxHealth)
-                {
-                    health = value;
-                }
-                else
-                {
-                    health = maxHealth;
-                }
-            }
-        }
-
+        public EnemyIdleState idleState = new();
+        public EnemyMovingState movingState = new();
+        public EnemyHurtState hurtState = new();
         #endregion
 
         private readonly float contactDamage = 1;
         private readonly float knockbackStrength = 100;
+        public bool canPathFind = true;
         public List<Node> path;
 
         public override void CallOnEnable()
         {
-            #region Setting state references
-            idleState = new();
-            walkingState = new();
-            hurtState = new();
-            #endregion
-
             SwitchState(idleState);
 
-            Library.playerInstance.OnTileChange += PlayerInstance_OnTileChange;
+            Library.playerInstance.OnNodeChange += PlayerInstance_OnNodeChange;
 
             base.CallOnEnable();
         }
 
         public override void Update(GameTime gameTime)
         {
-            currentState.Update(gameTime);
-
             base.Update(gameTime);
         }
 
-        #region Switch state code
-        public void SwitchState(EnemyBaseState state)
+        public override void OnDamage()
         {
-            currentState?.ExitState();
+            base.OnDamage();
 
-            currentState = state;
-
-            currentState.EnterState(this);
-        }
-        #endregion
-
-        #region Heatlh realated code
-        public void ApplyDamage(float damageAmount)
-        {
-            health -= damageAmount;
+            canPathFind = false;
 
             SwitchState(hurtState);
         }
 
-        public void ApplyKnockback(float knockbackStrength, Vector2 direction)
+        public override void RunAfterInvincibleFrames()
         {
-            Knockback(knockbackStrength, direction);
+            base.RunAfterInvincibleFrames();
+
+            canPathFind = true;
         }
 
-        #endregion
-
-        public void PlayerInstance_OnTileChange(object sender, EventArgs e)
+        public override void RunAfterKnockBack()
         {
-            if (CanMove)
-            {
-                if (Library.playerInstance != null)
-                {
-                    FindPath();
+            base.RunAfterKnockBack();
 
-                    if (currentState != walkingState)
+            if (HasReachedTarget())
+            {
+                direction = Vector2.Zero;
+                SwitchState(idleState);
+            }
+            else
+            {
+                SwitchState(movingState);
+            }
+        }
+
+        #region Methods related to pathfinding
+        public void PlayerInstance_OnNodeChange(object sender, EventArgs e)
+        {
+            if (CanMove && Library.playerInstance != null)
+            {
+                FindPath();
+
+                if (CurrentState != movingState)
+                {
+                    if (path != null && path.Count > 0)
                     {
-                        if (path != null && path.Count > 0)
-                        {
-                            SwitchState(walkingState);
-                        }
+                        SwitchState(movingState);
                     }
                 }
             }
         }
 
-        #region Find path towards player
         public void FindPath()
         {
-            Node startingTile = GetNode(feetHitbox);
+            Node startingNode = GetNode(feetHitbox, Library.activeRoom), targetNode = Library.playerInstance.currentNode;
 
-            if (startingTile != null && Library.playerInstance.tile != null)
+            if (startingNode != null && targetNode != null)
             {
-                path = AStar.GetPath(Library.activeRoom.grid, startingTile, Library.playerInstance.tile.node);
+                path = AStar.GetPath(Library.activeRoom.grid, startingNode, targetNode);
 
                 if (path.Count > 0)
                 {
-                    SwitchState(walkingState);
-
-                    //for (int i = 0; i < path.Count; i++)
-                    //{
-                    //    path[i].ownerOfNode.color = Color.Cyan;
-                    //}
+                    SwitchState(movingState);
                 }
-                else
+                else if (CurrentState != idleState)
                 {
-                    if (currentState != idleState)
-                    {
-                        SwitchState(idleState);
-                    }
+                    SwitchState(idleState);
                 }
             }
+        }
+
+        public bool HasValidPath()
+        {
+            if (path != null && path.Count > 0)
+            {
+                return true;
+            }
+            else if (CurrentState == movingState)
+            {
+                direction = Vector2.Zero;
+            }
+
+            return false;
+        }
+
+        public bool HasReachedTarget()
+        {
+            if (HasValidPath())
+            {
+                if (BoundingBox.Intersects(path.Last().ownerOfNode.Hitbox))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
         #endregion
 
@@ -163,47 +139,59 @@ namespace ARPG
             #region Collision with player
             if (source is Player p)
             {
-                if (!p.invincible)
+                if (!p.Invincible)
                 {
                     p.ApplyDamage(contactDamage);
 
-                    if (direction != Vector2.Zero)
+                    if (!p.IsDestroyed)
                     {
-                        p.ApplyKnockback(knockbackStrength, direction);
-                    }
-                    else if (p.direction != Vector2.Zero)
-                    {
-                        p.ApplyKnockback(knockbackStrength, -p.direction);
-                    }
-                    else
-                    {
-                        Vector2 result = Position - p.Position;
+                        Vector2 knockbackDirection;
 
-                        if (result != Vector2.Zero)
+                        if (direction != Vector2.Zero)
                         {
-                            result.Normalize();
+                            knockbackDirection = direction;
+                        }
+                        else if (p.direction != Vector2.Zero)
+                        {
+                            knockbackDirection = -p.direction;
                         }
                         else
                         {
-                            result = Vector2.One;
+                            knockbackDirection = Position - p.Position;
+
+                            if (knockbackDirection != Vector2.Zero)
+                            {
+                                knockbackDirection.Normalize();
+                            }
+                            else
+                            {
+                                knockbackDirection = Vector2.One;
+                            }
                         }
 
-                        p.ApplyKnockback(knockbackStrength, result);
+                        p.ApplyKnockback(knockbackStrength, knockbackDirection);
                     }
                 }
             }
             #endregion
         }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            base.Draw(spriteBatch);
+
+            DrawHealth(spriteBatch, Color.Red);
+        }
     }
 
     #region Idle state
-    public class EnemyIdleState : EnemyBaseState
+    public class EnemyIdleState : EntityBaseState
     {
         private Enemy enemy;
 
-        public override void EnterState(Enemy enemyReference)
+        public override void EnterState(Entity enemyReference)
         {
-            enemy = enemyReference;
+            enemy = (Enemy)enemyReference;
         }
 
         public override void Update(GameTime gameTime)
@@ -218,44 +206,23 @@ namespace ARPG
     }
     #endregion
 
-    #region Walking state
-    public class EnemyWalkingState : EnemyBaseState
+    #region Moving state
+    public class EnemyMovingState : EntityBaseState
     {
         private Enemy enemy;
         private Tile nextTile;
-        private int currentTileInPath;
 
-        public override void EnterState(Enemy enemyReference)
+        public override void EnterState(Entity enemyReference)
         {
-            enemy = enemyReference;
-
-            enemy.color = Color.Green;
-
-            currentTileInPath = 0;
-            FollowPath();
+            enemy = (Enemy)enemyReference;
         }
 
         public override void Update(GameTime gameTime)
         {
             enemy.Move(gameTime);
-            enemy.SetHitboxPosition();
+            enemy.UpdateHitboxAndHands();
 
-            if (enemy.path.Count > 0)
-            {
-                if (HasReachedTarget())
-                {
-                    enemy.SwitchState(enemy.idleState);
-                }
-                else if (enemy.BoundingBox.Intersects(nextTile.Hitbox))
-                {
-                    enemy.path.RemoveAt(currentTileInPath);
-                    FollowPath();
-                }
-            }
-            else
-            {
-                enemy.direction = Vector2.Zero;
-            }
+            PathFind();
 
             if (!enemy.CanMove || enemy.direction == Vector2.Zero)
             {
@@ -263,27 +230,36 @@ namespace ARPG
             }
         }
 
-        private void FollowPath()
+        public void PathFind()
         {
-            nextTile = enemy.path.ElementAt(currentTileInPath).ownerOfNode;
-            enemy.direction = GetDirection(nextTile);
-        }
+            if (!enemy.canPathFind || !enemy.HasValidPath())
+            {
+                return;
+            }
+            else if (nextTile == null)
+            {
+                FollowPath();
+                return;
+            }
 
-        private bool HasReachedTarget()
-        {
-            if (enemy.BoundingBox.Intersects(enemy.path.Last().ownerOfNode.Hitbox))
+            if (enemy.HasReachedTarget())
             {
                 enemy.direction = Vector2.Zero;
-
-                return true;
             }
-            else
+            else if (enemy.BoundingBox.Intersects(nextTile.Hitbox))
             {
-                return false;
+                enemy.path.RemoveAt(0);
+                FollowPath();
             }
         }
 
-        private Vector2 GetDirection(Tile target)
+        private void FollowPath()
+        {
+            nextTile = enemy.path.First().ownerOfNode;
+            enemy.direction = DirectionTowardsTile(nextTile);
+        }
+
+        private Vector2 DirectionTowardsTile(Tile target)
         {
             Vector2 result = target.Position - enemy.feetHitbox.Location.ToVector2();
 
@@ -294,51 +270,35 @@ namespace ARPG
 
         public override void ExitState()
         {
-            enemy.color = Color.Red;
+            nextTile = null;
         }
     }
     #endregion
 
     #region HurtState
-    public class EnemyHurtState : EnemyBaseState
+    public class EnemyHurtState : EntityBaseState
     {
         private Enemy enemy;
 
-        public override void EnterState(Enemy enemyReference)
+        public override void EnterState(Entity enemyReference)
         {
-            enemy = enemyReference;
+            enemy = (Enemy)enemyReference;
 
             if (enemy.Health <= 0)
             {
                 enemy.Destroy();
             }
+            else
+            {
+                // Switch state to moving because of knockback
 
-            enemy.invincible = true; 
-
-            Library.StartTimer(enemy.knockBackDuration, RunAfterKnockBack);
+                enemy.SwitchState(enemy.movingState);
+            }
         }
 
         public override void Update(GameTime gameTime)
         {
-            enemy.Move(gameTime);
 
-            enemy.SetHitboxPosition();
-        }
-
-        private void RunAfterKnockBack()
-        {
-            enemy.UnlockMovement();
-            enemy.invincible = false;
-
-            if (enemy.path != null && enemy.path.Count > 0)
-            {
-                enemy.SwitchState(enemy.walkingState);
-            }
-            else
-            {
-                enemy.direction = Vector2.Zero;
-                enemy.SwitchState(enemy.idleState);
-            }
         }
 
         public override void ExitState()

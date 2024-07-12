@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Reflection.Metadata;
 
 namespace ARPG
 {
@@ -36,7 +37,7 @@ namespace ARPG
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            GameManager.LoadContent(Content);
+            TextureManager.LoadTextures(Content);
         }
 
         protected override void Update(GameTime gameTime)
@@ -45,6 +46,7 @@ namespace ARPG
                 Exit();
 
             GameManager.Update(gameTime);
+            UIManager.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -54,6 +56,7 @@ namespace ARPG
             GraphicsDevice.Clear(Color.Black);
 
             GameManager.Draw(spriteBatch);
+            UIManager.Draw(spriteBatch);
 
             base.Draw(gameTime);
         }

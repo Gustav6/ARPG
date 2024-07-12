@@ -30,16 +30,15 @@ namespace ARPG
             ownerOfHand = owner;
         }
 
-        public void SetPosition(Vector2 offset)
+        public void UpdatePosition(Vector2 offset)
         {
             position = ownerOfHand.Position + offset;
-            weapon?.SetPosition();
+            weapon?.UpdatePosition(position);
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(texture, position, source, Color.White, 0, origin, scale, SpriteEffects.None, ownerOfHand.spriteLayer);
-
             weapon?.Draw(spriteBatch);
         }
     }

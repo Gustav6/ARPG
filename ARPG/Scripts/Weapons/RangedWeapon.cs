@@ -12,31 +12,15 @@ namespace ARPG
         protected float speedOfProjectile = 300;
         protected Vector2 spawnPosition;
 
-        public void ShootProjectile(ProjectileType type, Vector2 direction)
+        public void ShootProjectile(ProjectileType type, Vector2 projectileDirection)
         {
             Projectile projectile = new(type, spawnPosition, damageAmount, speedOfProjectile)
             {
                 ownerOfProjectile = ownerOfWeapon,
-                direction = direction,
+                direction = projectileDirection,
             };
 
             Library.AddGameObject(projectile);
-        }
-
-        public Vector2 DirectionTowardsMouse()
-        {
-            Vector2 finalDirection = Library.cameraInstance.ScreenToWorldSpace() - spawnPosition;
-
-            if (finalDirection != Vector2.Zero)
-            {
-                finalDirection.Normalize();
-            }
-            else
-            {
-                finalDirection = new Vector2 (0, 1);
-            }
-
-            return finalDirection;
         }
     }
 }

@@ -17,6 +17,9 @@ namespace ARPG
 
         public static List<Node> GetPath(Tile[,] grid, Node start, Node target)
         {
+            if (start == target)
+                return new List<Node>();
+
             FindPath(grid, start, target);
             List<Node> path = new();
 
@@ -47,7 +50,7 @@ namespace ARPG
         private static void FindPath(Tile[,] _grid, Node start, Node target)
         {
             // Variables needed to run the method
-            if (target == null || start == null || _grid == null || start == target)
+            if (target == null || start == null || _grid == null)
                 return;
 
             startingNode = start;

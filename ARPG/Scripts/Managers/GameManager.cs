@@ -13,8 +13,6 @@ namespace ARPG
 {
     public static class GameManager
     {
-        private static float frameRate;
-
         public static void Initialize()
         {
             Library.playerInstance = new Player(new Vector2(0, 0));
@@ -24,11 +22,6 @@ namespace ARPG
             Library.AddGameObject(Library.playerInstance);
 
             Library.tileMap.GenerateNewMap();
-        }
-
-        public static void LoadContent(ContentManager content)
-        {
-            TextureManager.LoadTextures(content);
         }
 
         public static void Update(GameTime gameTime)
@@ -85,11 +78,21 @@ namespace ARPG
                     Library.activeRoom.OnEnterRoom();
                 }
             }
+            else
+            {
+                for (int i = 0; i < Library.tileMap.rooms.Count; i++)
+                {
+                    if (Library.playerInstance.BoundingBox.Intersects(Library.tileMap.rooms[i].bounds))
+                    {
+                        Library.activeRoom = Library.tileMap.rooms[i];
+                        Library.activeRoom.OnEnterRoom();
+                        break;
+                    }
+                }
+            }
             #endregion
 
             #region Debug
-
-            frameRate = MathF.Round(1 / (float)gameTime.ElapsedGameTime.TotalSeconds);
 
             if (KeyboardInput.HasBeenPressed(Keys.Space))
             {
@@ -109,7 +112,7 @@ namespace ARPG
 
         public static void Draw(SpriteBatch spriteBatch)
         {
-            // Draw world and game objects
+            #region Draw world
             spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, null, null, null, null, Library.cameraInstance.Transform);
 
             Library.tileMap.DrawMap(spriteBatch);
@@ -125,17 +128,7 @@ namespace ARPG
             }
 
             spriteBatch.End();
-
-            // Draw the user interface
-            spriteBatch.Begin();
-
-            if (UIManager.showFps)
-            {
-                spriteBatch.DrawString(TextureManager.Font, "FPS : " + frameRate.ToString(), new Vector2(75, 50), Color.Green, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, TextureManager.SpriteLayers[SpriteLayer.UI]);
-                spriteBatch.DrawString(TextureManager.Font, Library.gameObjects.Count.ToString(), new Vector2(75, 100), Color.Green, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, TextureManager.SpriteLayers[SpriteLayer.UI]);
-            }
-
-            spriteBatch.End();
+            #endregion
         }
     }
 }

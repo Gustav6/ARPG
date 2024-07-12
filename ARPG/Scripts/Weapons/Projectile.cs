@@ -23,10 +23,10 @@ namespace ARPG
             set { hitbox = value; }
         }
 
-        public Projectile(ProjectileType type, Vector2 position, float _damage, float _speed, float knockback = 5, float _lifeSpan = 5)
+        public Projectile(ProjectileType type, Vector2 startingPos, float _damage, float _speed, float knockback = 5, float _lifeSpan = 5)
         {
             #region Starting variables
-            Position = position;
+            SetPosition(startingPos);
             lifeSpan = _lifeSpan;
             damage = _damage;
             speed = _speed;
@@ -40,7 +40,7 @@ namespace ARPG
 
             this.type = type;
 
-            hitbox = new Rectangle((int)Position.X, (int)Position.Y, texture.Width, texture.Height);
+            hitbox = new Rectangle((int)base.Position.X, (int)base.Position.Y, texture.Width, texture.Height);
         }
 
         public override void CallOnEnable()

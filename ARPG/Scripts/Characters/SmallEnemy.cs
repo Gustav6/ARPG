@@ -13,10 +13,10 @@ namespace ARPG
         public SmallEnemy(Vector2 startingPosition)
         {
             #region Starting variables
-            Position = startingPosition;
+            SetPosition(startingPosition);
             speed = 300;
             maxHealth = 50;
-            health = maxHealth;
+            Health = maxHealth;
 
             handOffset = new Vector2(24, 0);
             #endregion

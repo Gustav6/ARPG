@@ -50,23 +50,22 @@ namespace ARPG
                     {
                         PlaceRoom(xPosition, yPosition, currentRoom.grid);
 
-                        if (Library.playerInstance != null && roomsLeft == maximumAmountOfRooms)
+                        if (roomsLeft == maximumAmountOfRooms)
                         {
-                            Vector2 newPlayerPos = new (xPosition + width / 2, yPosition + height / 2);
-                            newPlayerPos *= TextureManager.tileSize;
-
-                            Library.playerInstance.SetPosition(newPlayerPos);
-                            Library.activeRoom = currentRoom;
-
-                            for (int i = currentRoom.enemies.Count - 1; i >= 0; i--)
+                            if (Library.playerInstance != null)
                             {
-                                if (currentRoom.enemies[i].BoundingBox.Intersects(Library.playerInstance.BoundingBox))
+                                Vector2 spawnPosition = new Vector2(xPosition + width / 2, yPosition + height / 2) * TextureManager.tileSize;
+
+                                Library.playerInstance.SetPosition(spawnPosition);
+
+                                for (int i = currentRoom.enemies.Count - 1; i >= 0; i--)
                                 {
-                                    currentRoom.enemies[i].Destroy();
+                                    if (currentRoom.enemies[i].BoundingBox.Intersects(Library.playerInstance.BoundingBox))
+                                    {
+                                        currentRoom.enemies[i].Destroy();
+                                    }
                                 }
                             }
-
-                            currentRoom.OnEnterRoom();
                         }
 
                         Library.tileMap.rooms.Add(currentRoom);

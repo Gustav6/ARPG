@@ -12,17 +12,13 @@ namespace ARPG
     {
         public Staff(Entity owner)
         {
-            damageAmount = 1;
+            damageAmount = 50;
             speedOfProjectile = 800;
-            texture = TextureManager.WeaponTexturesPairs[WeaponTextures.Staff];
             ownerOfWeapon = owner;
-        }
 
-        public override void CallOnEnable()
-        {
+            #region Draw variables
             texture = TextureManager.WeaponTexturesPairs[WeaponTextures.Staff];
-
-            base.CallOnEnable();
+            #endregion
         }
 
         public override void Attack()
@@ -30,7 +26,7 @@ namespace ARPG
             spawnPosition = Position;
             spawnPosition.Y -= texture.Height / 2;
 
-            ShootProjectile(ProjectileType.Fireball, DirectionTowardsMouse());
+            ShootProjectile(ProjectileType.Fireball, DirectionTowardsMouse(spawnPosition));
         }
     }
 }

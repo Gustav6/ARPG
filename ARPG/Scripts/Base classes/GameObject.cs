@@ -28,7 +28,7 @@ namespace ARPG
             set { rotation = value; }
         }
 
-        public Vector2 Position { get; set; }
+        public Vector2 Position { private set; get; }
         public bool IsDestroyed { get; private set; }
 
         public virtual void CallOnEnable()
@@ -51,6 +51,11 @@ namespace ARPG
         }
 
         public virtual void CallOnDestroy() { }
+
+        public virtual void SetPosition(Vector2 newPosition)
+        {
+            Position = newPosition;
+        }
 
         public void SetRotation(float newRotation)
         {

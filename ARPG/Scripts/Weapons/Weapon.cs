@@ -9,9 +9,9 @@ namespace ARPG
         
         public override void CallOnEnable()
         {
-            base.CallOnEnable();
-
             spriteLayer = TextureManager.SpriteLayers[SpriteLayer.Weapon];
+
+            base.CallOnEnable();
         }
 
         public override void Update(GameTime gameTime)
@@ -19,27 +19,48 @@ namespace ARPG
             base.Update(gameTime);
         }
 
-        public abstract void Attack();
-
-        public void SetPosition()
-        {
-            Position = ownerOfWeapon.rightHand.position;
-        }
-
-        public static void Create(WeaponID weaponType, Hand hand, Entity owner)
+        public static void SpawnWeapon(WeaponID weaponType, Hand hand, Entity owner)
         {
             switch (weaponType)
             {
                 case WeaponID.Staff:
                     hand.weapon = new Staff(owner);
                     break;
-                case WeaponID.Sword: 
+                case WeaponID.Sword:
                     break;
                 default:
                     break;
             }
 
             hand.weapon.CallOnEnable();
+        }
+
+        public void UpdatePosition(Vector2 handsPosition)
+        {
+            SetPosition(handsPosition);
+        }
+
+        public abstract void Attack();
+
+        protected Vector2 DirectionTowardsMouse(Vector2 originFromAttack)
+        {
+            if (originFromAttack == Vector2.Zero)
+            {
+                originFromAttack = Library.playerInstance.Position;
+            }
+
+            Vector2 finalDirection = Library.cameraInstance.ScreenToWorldSpace() - originFromAttack;
+
+            if (finalDirection != Vector2.Zero)
+            {
+                finalDirection.Normalize();
+            }
+            else
+            {
+                finalDirection = new Vector2(0, 1);
+            }
+
+            return finalDirection;
         }
     }
 
