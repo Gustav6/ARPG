@@ -12,9 +12,13 @@ namespace ARPG
     {
         public Entity ownerOfProjectile;
         private ProjectileType type;
+
         private float lifeSpan;
         private float damage;
         private float knockbackStrength;
+        private float pierceTimes;
+
+        private List<IDamageable> entitiesDamaged = new();
 
         private Rectangle hitbox;
         public Rectangle BoundingBox
@@ -23,7 +27,7 @@ namespace ARPG
             set { hitbox = value; }
         }
 
-        public Projectile(ProjectileType type, Vector2 startingPos, float _damage, float _speed, float knockback = 5, float _lifeSpan = 5)
+        public Projectile(ProjectileType type, Vector2 startingPos, float _damage, float _speed, float _pierceTimes = 1, float knockback = 5, float _lifeSpan = 5)
         {
             #region Starting variables
             SetPosition(startingPos);
@@ -31,6 +35,7 @@ namespace ARPG
             damage = _damage;
             speed = _speed;
             knockbackStrength = knockback;
+            pierceTimes = _pierceTimes;
             #endregion
 
             #region Draw variables
@@ -43,9 +48,9 @@ namespace ARPG
             hitbox = new Rectangle((int)base.Position.X, (int)base.Position.Y, texture.Width, texture.Height);
         }
 
-        public override void CallOnEnable()
+        public override void CallOnInstantiate()
         {
-            base.CallOnEnable();
+            base.CallOnInstantiate();
         }
 
         public override void Update(GameTime gameTime)
@@ -77,9 +82,20 @@ namespace ARPG
 
             if (source is IDamageable d)
             {
+                if (entitiesDamaged.Contains(d))
+                {
+                    return;
+                }
+
                 d.ApplyDamage(damage);
                 d.ApplyKnockback(knockbackStrength, direction);
-                Destroy();
+                entitiesDamaged.Add(d);
+                pierceTimes--;
+
+                if (pierceTimes <= 0)
+                {
+                    Destroy();
+                }
             }
         }
 

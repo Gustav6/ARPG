@@ -16,17 +16,17 @@ namespace ARPG
         public int gCost; // Cost from starting node
         public int hCost; // How far away from end node
         public int fCost; // GCost + hCost
-        public Tile ownerOfNode;
+        public Tile Tile { get; private set; }
         public Node parent; // What node that "owns" the current node
         public bool Walkable { get; private set; }
 
-        public Node(Vector2 position, int gridX, int gridY, bool walkable, Tile ownerOfNode)
+        public Node(Vector2 position, int gridX, int gridY, bool walkable, Tile tile)
         {
             Position = position;
             GridX = gridX;
             GridY = gridY;
             Walkable = walkable;
-            this.ownerOfNode = ownerOfNode;
+            Tile = tile;
         }
 
         public void ResetNode()

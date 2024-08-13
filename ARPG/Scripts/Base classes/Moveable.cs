@@ -15,11 +15,11 @@ namespace ARPG
         protected float speed;
         protected bool canFlip = true;
 
-        public override void CallOnEnable()
+        public override void CallOnInstantiate()
         {
             UnlockMovement();
 
-            base.CallOnEnable();
+            base.CallOnInstantiate();
         }
 
         public override void Update(GameTime gameTime)

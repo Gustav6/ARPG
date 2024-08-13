@@ -44,7 +44,7 @@ namespace ARPG
 
         public static void AddGameObject(GameObject obj)
         {
-            obj.CallOnEnable();
+            obj.CallOnInstantiate();
             gameObjects.Add(obj);
         }
 

@@ -31,7 +31,7 @@ namespace ARPG
         public Vector2 Position { private set; get; }
         public bool IsDestroyed { get; private set; }
 
-        public virtual void CallOnEnable()
+        public virtual void CallOnInstantiate()
         {
             if (texture != null)
             {

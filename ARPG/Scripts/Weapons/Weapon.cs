@@ -7,11 +7,11 @@ namespace ARPG
         public Entity ownerOfWeapon;
         public float damageAmount;
         
-        public override void CallOnEnable()
+        public override void CallOnInstantiate()
         {
             spriteLayer = TextureManager.SpriteLayers[SpriteLayer.Weapon];
 
-            base.CallOnEnable();
+            base.CallOnInstantiate();
         }
 
         public override void Update(GameTime gameTime)
@@ -32,7 +32,7 @@ namespace ARPG
                     break;
             }
 
-            hand.weapon.CallOnEnable();
+            hand.weapon.CallOnInstantiate();
         }
 
         public void UpdatePosition(Vector2 handsPosition)

@@ -41,7 +41,7 @@ namespace ARPG
 
         #region Health variables
         public bool Invincible { get; private set; }
-        public readonly float invincibleTime = 0.25f;
+        public float invincibleTime = 0.2f;
 
         public float maxHealth = 200;
         private float health;
@@ -71,7 +71,7 @@ namespace ARPG
         public bool canAttack = true;
         public float attackSpeed = 5;
 
-        public override void CallOnEnable()
+        public override void CallOnInstantiate()
         {
             #region Instansiate hands
             leftHand = new Hand(this);
@@ -81,7 +81,7 @@ namespace ARPG
             rightHand?.UpdatePosition(handOffset);
             #endregion
 
-            base.CallOnEnable();
+            base.CallOnInstantiate();
         }
 
         public override void Update(GameTime gameTime)
@@ -118,6 +118,7 @@ namespace ARPG
         {
             canAttack = false;
         }
+
         #endregion
 
         #region Position related methods
@@ -136,6 +137,7 @@ namespace ARPG
             hitbox.Location = new Vector2(Position.X, Position.Y).ToPoint();
             feetHitbox.Location = new Point(hitbox.Location.X, hitbox.Location.Y + feetHitboxOffset);
         }
+
         #endregion
 
         #region Heatlh realated methods
@@ -202,13 +204,6 @@ namespace ARPG
         #endregion
 
         public virtual void OnCollision(ICollidable source) { }
-
-        public void DrawHealth(SpriteBatch spriteBatch, Color color)
-        {
-            Vector2 size = TextureManager.Font.MeasureString(Health.ToString());
-
-            spriteBatch.DrawString(TextureManager.Font, Health.ToString(), new Vector2(Position.X - size.X / 2, Position.Y - texture.Height), color, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, spriteLayer);
-        }
 
         public override void Draw(SpriteBatch spriteBatch)
         {

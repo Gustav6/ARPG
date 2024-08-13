@@ -21,15 +21,17 @@ namespace ARPG
         private readonly float contactDamage = 1;
         private readonly float knockbackStrength = 100;
         public bool canPathFind = true;
+
+        public List<Node> prevPath;
         public List<Node> path;
 
-        public override void CallOnEnable()
+        public override void CallOnInstantiate()
         {
             SwitchState(idleState);
 
             Library.playerInstance.OnNodeChange += PlayerInstance_OnNodeChange;
 
-            base.CallOnEnable();
+            base.CallOnInstantiate();
         }
 
         public override void Update(GameTime gameTime)
@@ -122,7 +124,7 @@ namespace ARPG
         {
             if (HasValidPath())
             {
-                if (BoundingBox.Intersects(path.Last().ownerOfNode.Hitbox))
+                if (BoundingBox.Intersects(path.Last().Tile.Hitbox))
                 {
                     return true;
                 }
@@ -176,11 +178,42 @@ namespace ARPG
             #endregion
         }
 
+        public void DrawHealthBar(SpriteBatch spriteBatch)
+        {
+            // Draw health "variable"
+
+            if (Health > 0)
+            {
+                float currentHealth = Health / maxHealth;
+
+                Color color = Color.Green;
+
+                if (currentHealth <= 0.5f && currentHealth > 0.25f)
+                {
+                    color = Color.Yellow;
+                }
+                else if (currentHealth <= 0.25f)
+                {
+                    color = Color.Red;
+                }
+
+                Vector2 size = TextureManager.Font.MeasureString(Health.ToString());
+
+                Vector2 position = new(Position.X - size.X / 2, Position.Y + texture.Height / 2);
+
+                spriteBatch.DrawString(TextureManager.Font, Health.ToString(), position, color, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, TextureManager.SpriteLayers[SpriteLayer.UI]);
+            }
+
+            // Draw health background
+
+
+        }
+
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
 
-            DrawHealth(spriteBatch, Color.Red);
+            DrawHealthBar(spriteBatch);
         }
     }
 
@@ -215,6 +248,11 @@ namespace ARPG
         public override void EnterState(Entity enemyReference)
         {
             enemy = (Enemy)enemyReference;
+
+            if (enemy.canPathFind && enemy.HasValidPath())
+            {
+                FollowPath();
+            }
         }
 
         public override void Update(GameTime gameTime)
@@ -222,7 +260,20 @@ namespace ARPG
             enemy.Move(gameTime);
             enemy.UpdateHitboxAndHands();
 
-            PathFind();
+            //PathFind();
+
+            if (enemy.canPathFind && nextTile != null)
+            {
+                if (enemy.HasReachedTarget())
+                {
+                    enemy.direction = Vector2.Zero;
+                }
+                else if (enemy.BoundingBox.Intersects(nextTile.Hitbox))
+                {
+                    enemy.path.RemoveAt(0);
+                    FollowPath();
+                }
+            }
 
             if (!enemy.CanMove || enemy.direction == Vector2.Zero)
             {
@@ -230,36 +281,13 @@ namespace ARPG
             }
         }
 
-        public void PathFind()
-        {
-            if (!enemy.canPathFind || !enemy.HasValidPath())
-            {
-                return;
-            }
-            else if (nextTile == null)
-            {
-                FollowPath();
-                return;
-            }
-
-            if (enemy.HasReachedTarget())
-            {
-                enemy.direction = Vector2.Zero;
-            }
-            else if (enemy.BoundingBox.Intersects(nextTile.Hitbox))
-            {
-                enemy.path.RemoveAt(0);
-                FollowPath();
-            }
-        }
-
         private void FollowPath()
         {
-            nextTile = enemy.path.First().ownerOfNode;
-            enemy.direction = DirectionTowardsTile(nextTile);
+            nextTile = enemy.path.First().Tile;
+            enemy.direction = DirectionTowardsNode(nextTile);
         }
 
-        private Vector2 DirectionTowardsTile(Tile target)
+        private Vector2 DirectionTowardsNode(Tile target)
         {
             Vector2 result = target.Position - enemy.feetHitbox.Location.ToVector2();
 

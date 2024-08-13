@@ -24,6 +24,7 @@ namespace ARPG.Scripts.Managers
                                 if (c1.BoundingBox.Intersects(c2.BoundingBox))
                                 {
                                     c1.OnCollision(c2);
+                                    break;
                                 }
                             }
                         }

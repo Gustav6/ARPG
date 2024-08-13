@@ -14,7 +14,7 @@ namespace ARPG
 
         public void ShootProjectile(ProjectileType type, Vector2 projectileDirection)
         {
-            Projectile projectile = new(type, spawnPosition, damageAmount, speedOfProjectile)
+            Projectile projectile = new(type, spawnPosition, damageAmount, speedOfProjectile, 2)
             {
                 ownerOfProjectile = ownerOfWeapon,
                 direction = projectileDirection,

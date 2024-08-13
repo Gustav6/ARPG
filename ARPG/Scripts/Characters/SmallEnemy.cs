@@ -31,9 +31,9 @@ namespace ARPG
             feetHitboxOffset = texture.Height / 2 + feetHitbox.Height;
         }
 
-        public override void CallOnEnable()
+        public override void CallOnInstantiate()
         {
-            base.CallOnEnable();
+            base.CallOnInstantiate();
 
             leftHand.scale = new Vector2(0.5f, 0.5f);
             rightHand.scale = new Vector2(0.5f, 0.5f);

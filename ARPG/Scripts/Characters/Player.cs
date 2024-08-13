@@ -34,11 +34,11 @@ namespace ARPG
             feetHitboxOffset = texture.Height / 2 + feetHitbox.Height;
         }
 
-        public override void CallOnEnable()
+        public override void CallOnInstantiate()
         {
             SwitchState(idleState);
 
-            base.CallOnEnable();
+            base.CallOnInstantiate();
 
             Weapon.SpawnWeapon(WeaponID.Staff, rightHand, this);
         }
@@ -62,7 +62,7 @@ namespace ARPG
 
         public void CheckForNodeChange()
         {
-            if (currentNode == null || !feetHitbox.Intersects(currentNode.ownerOfNode.Hitbox))
+            if (currentNode == null || !feetHitbox.Intersects(currentNode.Tile.Hitbox))
             {
                 currentNode = GetNode(feetHitbox, Library.activeRoom);
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,60 +18,26 @@ namespace ARPG
 
         public static List<Node> GetPath(Tile[,] grid, Node start, Node target)
         {
-            if (start == target)
+            if (start == target || !target.Walkable)
                 return new List<Node>();
 
-            FindPath(grid, start, target);
-            List<Node> path = new();
-
-            if (FoundPath)
-            {
-                Node currentTile = target.parent;
-
-                if (currentTile == null)
-                {
-                    return path;
-                }
-
-                while (currentTile != startingNode)
-                {
-                    if (currentTile.parent != null)
-                    {
-                        path.Add(currentTile);
-                        currentTile = currentTile.parent;
-                    }
-                }
-
-                path.Reverse();
-            }
+            List<Node> path = FindPath(grid, start, target);
 
             return path;
         }
 
-        private static void FindPath(Tile[,] _grid, Node start, Node target)
+        private static List<Node> FindPath(Tile[,] _grid, Node start, Node target)
         {
             // Variables needed to run the method
             if (target == null || start == null || _grid == null)
-                return;
+                return new List<Node>();
 
             startingNode = start;
             targetNode = target;
             grid = _grid;
             FoundPath = false;
 
-            #region Reset map
-            for (int x = 0; x < grid.GetLength(0); x++)
-            {
-                for (int y = 0; y < grid.GetLength(1); y++)
-                {
-                    if (grid[x, y].node != targetNode && grid[x, y].node != startingNode)
-                    {
-                        grid[x, y].node.ResetNode();
-                        grid[x, y].node.ownerOfNode.color = Color.White;
-                    }
-                }
-            }
-            #endregion
+            startingNode.ResetNode();
 
             HashSet<Node> closedNodes = new();
             List<Node> openNodes = new()
@@ -82,6 +49,7 @@ namespace ARPG
 
             while (!FoundPath && openNodes.Count > 0)
             {
+                #region Get node with lowest f cost
                 for (int i = 0; i < openNodes.Count; i++)
                 {
                     if (currentNode == null)
@@ -90,13 +58,16 @@ namespace ARPG
                     }
                     else if (currentNode.fCost > openNodes[i].fCost)
                     {
+                        // Get next node with lowest total cost
                         currentNode = openNodes[i];
                     }
                     else if (currentNode.fCost == openNodes[i].fCost && currentNode.hCost > openNodes[i].hCost)
                     {
-
+                        // Special case for nodes that has same total cost but requires less move cost
+                        currentNode = openNodes[i];
                     }
                 }
+                #endregion
 
                 #region Check neighbors
                 foreach (Node neighbor in GetNeighbors(currentNode.GridX, currentNode.GridY))
@@ -112,6 +83,11 @@ namespace ARPG
                         continue;
                     }
 
+                    if (!openNodes.Contains(neighbor) && !closedNodes.Contains(neighbor))
+                    {
+                        neighbor.ResetNode();
+                    }
+
                     int newPathCost = currentNode.gCost + GetDistance(currentNode, neighbor);
 
                     if (newPathCost < neighbor.gCost || !openNodes.Contains(neighbor))
@@ -123,10 +99,35 @@ namespace ARPG
                 }
                 #endregion
 
-                closedNodes.Add(currentNode);
-                openNodes.Remove(currentNode);
-                currentNode = null;
+                if (!FoundPath)
+                {
+                    closedNodes.Add(currentNode);
+                    openNodes.Remove(currentNode);
+                    currentNode = null;
+                }
             }
+
+            #region Create the path to return
+
+            List<Node> path = new();
+
+            if (FoundPath)
+            {
+                while (currentNode != startingNode)
+                {
+                    if (currentNode.parent != null)
+                    {
+                        path.Add(currentNode);
+                        currentNode = currentNode.parent;
+                    }
+                }
+
+                path.Reverse();
+            }
+
+            #endregion
+
+            return path;
         }
 
         private static void SetCosts(Node currentNode, Node neighbor)
@@ -156,7 +157,7 @@ namespace ARPG
         private static int GetHCost(Node currentNode)
         {
             // The cost from the current node to the target
-            int totalCost = 0;
+            int totalHCost = 0;
 
             List<Node> hasVisited = new()
             {
@@ -217,7 +218,7 @@ namespace ARPG
                 }
                 #endregion
 
-                totalCost += moveCost;
+                totalHCost += moveCost;
 
                 if (closestNode == targetNode)
                 {
@@ -225,7 +226,7 @@ namespace ARPG
                 }
             }
 
-            return totalCost;
+            return totalHCost;
         }
 
         private static int GetDistance(Node NodeA, Node NodeB)
