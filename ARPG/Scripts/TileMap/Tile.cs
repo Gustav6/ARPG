@@ -39,7 +39,7 @@ namespace ARPG
                 walkable = true;
             }
 
-            node = new Node(Position, x, y, walkable, this);
+            node = new Node(Position, new Point(x, y), walkable, this);
 
             if (texture != null)
             {
@@ -51,6 +51,8 @@ namespace ARPG
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(texture, Position, source, color, 0, origin, Vector2.One, SpriteEffects.None, TextureManager.SpriteLayers[SpriteLayer.Default]);
+
+            //node.DebugDraw(spriteBatch);
         }
     }
 

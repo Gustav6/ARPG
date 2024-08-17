@@ -1,238 +1,150 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ARPG
 {
-    public static class AStar
+    public class AStar
     {
-        public static bool FoundPath { get; private set; }
-        private static Tile[,] grid;
+        public bool FoundPath { get; private set; }
+        private Node[] nodes;
 
-        private static Node targetNode;
-        private static Node startingNode;
+        private int gridWidth, gridHeight;
 
-        public static List<Node> GetPath(Tile[,] grid, Node start, Node target)
+        private Point start, target;
+
+        private List<Node> path = [];
+        private HashSet<Point> closedNodes = [];
+        private List<Point> openNodes = [];
+
+        private List<Node> hCostNeighbors = [];
+        private List<Node> currentNodeNeighbors = [];
+
+        public List<Node> FindPath(Tile[,] grid, Node _start, Node _target)
         {
-            if (start == target || !target.Walkable)
-                return new List<Node>();
+            if (!_target.Walkable)
+                return [];
 
-            List<Node> path = FindPath(grid, start, target);
+            start = _start.GridPosition;
+            target = _target.GridPosition;
 
-            return path;
-        }
+            gridWidth = grid.GetLength(0);
+            gridHeight = grid.GetLength(1);
 
-        private static List<Node> FindPath(Tile[,] _grid, Node start, Node target)
-        {
-            // Variables needed to run the method
-            if (target == null || start == null || _grid == null)
-                return new List<Node>();
-
-            startingNode = start;
-            targetNode = target;
-            grid = _grid;
             FoundPath = false;
 
-            startingNode.ResetNode();
+            path.Clear();
+            closedNodes.Clear();
+            openNodes.Clear();
 
-            HashSet<Node> closedNodes = new();
-            List<Node> openNodes = new()
+            openNodes.Add(start);
+
+            if (nodes == null || nodes.Length < grid.Length)
             {
-                startingNode
-            };
+                nodes = new Node[grid.Length];
+            }
 
-            Node currentNode = startingNode;
-
-            while (!FoundPath && openNodes.Count > 0)
+            for (int i = 0; i < grid.Length; i++)
             {
+                nodes[i] = grid[i % gridWidth, i / gridWidth].node;
+            }
+
+            Node currentNode;
+
+            while (openNodes.Count > 0 && !FoundPath)
+            {
+                currentNode = GetNode(openNodes[0]);
+
                 #region Get node with lowest f cost
+
                 for (int i = 0; i < openNodes.Count; i++)
                 {
-                    if (currentNode == null)
+                    Node temp = GetNode(openNodes[i]);
+
+                    if (currentNode.FCost > temp.FCost || currentNode.FCost == temp.FCost && currentNode.hCost > temp.hCost)
                     {
-                        currentNode = openNodes[i];
-                    }
-                    else if (currentNode.fCost > openNodes[i].fCost)
-                    {
-                        // Get next node with lowest total cost
-                        currentNode = openNodes[i];
-                    }
-                    else if (currentNode.fCost == openNodes[i].fCost && currentNode.hCost > openNodes[i].hCost)
-                    {
-                        // Special case for nodes that has same total cost but requires less move cost
-                        currentNode = openNodes[i];
+                        currentNode = temp;
                     }
                 }
+
                 #endregion
 
                 #region Check neighbors
-                foreach (Node neighbor in GetNeighbors(currentNode.GridX, currentNode.GridY))
+
+                GetNeighbors(currentNode.GridPosition, currentNodeNeighbors);
+
+                for (int i = 0; i < currentNodeNeighbors.Count; i++)
                 {
-                    if (neighbor == targetNode)
-                    {
-                        FoundPath = true;
-                        targetNode.parent = currentNode;
-                        break;
-                    }
-                    else if (closedNodes.Contains(neighbor) || !neighbor.Walkable)
+                    ref Node neighbor = ref System.Runtime.InteropServices.CollectionsMarshal.AsSpan(currentNodeNeighbors)[i];
+
+                    if (closedNodes.Contains(neighbor.GridPosition) || !neighbor.Walkable)
                     {
                         continue;
-                    }
-
-                    if (!openNodes.Contains(neighbor) && !closedNodes.Contains(neighbor))
-                    {
-                        neighbor.ResetNode();
                     }
 
                     int newPathCost = currentNode.gCost + GetDistance(currentNode, neighbor);
 
-                    if (newPathCost < neighbor.gCost || !openNodes.Contains(neighbor))
+                    if (newPathCost < neighbor.gCost || !openNodes.Contains(neighbor.GridPosition))
                     {
-                        openNodes.Add(neighbor);
+                        openNodes.Add(neighbor.GridPosition);
 
-                        SetCosts(grid[currentNode.GridX, currentNode.GridY].node, neighbor);
+                        GetNode(neighbor.GridPosition).SetCosts(currentNode, GetNode(target));
                     }
                 }
+
                 #endregion
 
-                if (!FoundPath)
+                closedNodes.Add(currentNode.GridPosition);
+                openNodes.Remove(currentNode.GridPosition);
+
+                if (currentNode.GridPosition == target)
                 {
-                    closedNodes.Add(currentNode);
-                    openNodes.Remove(currentNode);
-                    currentNode = null;
+                    FoundPath = true;
+                    path = RetracePath(currentNode);
                 }
             }
 
-            #region Create the path to return
+            return new List<Node>(path);
+        }
 
-            List<Node> path = new();
+        private List<Node> RetracePath(Node targetNode)
+        {
+            path.Clear();
+            Node temp = targetNode;
 
-            if (FoundPath)
+            while (temp.GridPosition != start)
             {
-                while (currentNode != startingNode)
+                if (temp.parent != null)
                 {
-                    if (currentNode.parent != null)
-                    {
-                        path.Add(currentNode);
-                        currentNode = currentNode.parent;
-                    }
-                }
+                    path.Add(temp);
 
+                    temp = GetNode(temp.parent.Value);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (path.Count > 0)
+            {
                 path.Reverse();
             }
-
-            #endregion
 
             return path;
         }
 
-        private static void SetCosts(Node currentNode, Node neighbor)
+        private ref Node GetNode(Point position)
         {
-            #region Set baseCost
-            int baseGCost;
+            int i = position.X + position.Y * gridWidth;
 
-            if (currentNode.GridX == neighbor.GridX || currentNode.GridY == neighbor.GridY)
-            {
-                baseGCost = 10;
-            }
-            else
-            {
-                baseGCost = 14;
-            }
-            #endregion
-
-            #region Set node values
-            neighbor.hCost = GetHCost(neighbor);
-            neighbor.gCost = currentNode.gCost + baseGCost;
-            neighbor.fCost = neighbor.gCost + neighbor.hCost;
-
-            neighbor.parent = currentNode;
-            #endregion
+            return ref nodes[i];
         }
 
-        private static int GetHCost(Node currentNode)
+        public int GetDistance(Node NodeA, Node NodeB)
         {
-            // The cost from the current node to the target
-            int totalHCost = 0;
-
-            List<Node> hasVisited = new()
-            {
-                currentNode,
-            };
-
-            bool foundTarget = false;
-            Node closestNode = currentNode;
-
-            while (!foundTarget)
-            {
-                int moveCost;
-                Node prevNode = closestNode;
-                List<Node> neighbors = new();
-                neighbors.AddRange(GetNeighbors(closestNode.GridX, closestNode.GridY));
-
-                // "Walk" towards target to calculate final distance
-
-                #region Get the closest node
-
-                foreach (Node neighbor in neighbors)
-                {
-                    if (hasVisited.Contains(neighbor))
-                    {
-                        continue;
-                    }
-
-                    #region Distance from the new neighboring node to target
-
-                    float xDistance = MathF.Abs(neighbor.Position.X - targetNode.Position.X);
-                    float yDistance = MathF.Abs(neighbor.Position.Y - targetNode.Position.Y);
-
-                    #endregion
-
-                    #region Distance from the current closest node to target
-
-                    float tempXDistance = MathF.Abs(closestNode.Position.X - targetNode.Position.X);
-                    float tempYDistance = MathF.Abs(closestNode.Position.Y - targetNode.Position.Y);
-
-                    #endregion
-
-                    if (xDistance < tempXDistance || yDistance < tempYDistance)
-                    {
-                        closestNode = neighbor;
-                        hasVisited.Add(closestNode);
-                    }
-                }
-                #endregion
-
-                #region Determine if move is with adjacent node or not
-                if (closestNode.GridX == prevNode.GridX || closestNode.GridY == prevNode.GridY)
-                {
-                    moveCost = 10;
-                }
-                else
-                {
-                    moveCost = 14;
-                }
-                #endregion
-
-                totalHCost += moveCost;
-
-                if (closestNode == targetNode)
-                {
-                    foundTarget = true;
-                }
-            }
-
-            return totalHCost;
-        }
-
-        private static int GetDistance(Node NodeA, Node NodeB)
-        {
-            int distanceX = Math.Abs(NodeA.GridX - NodeB.GridX);
-            int distanceY = Math.Abs(NodeA.GridY - NodeB.GridY);
+            int distanceX = Math.Abs(NodeA.GridPosition.X - NodeB.GridPosition.X);
+            int distanceY = Math.Abs(NodeA.GridPosition.Y - NodeB.GridPosition.Y);
 
             if (distanceX > distanceY)
             {
@@ -244,69 +156,67 @@ namespace ARPG
             }
         }
 
-        private static List<Node> GetNeighbors(int positionX, int positionY)
+        private void GetNeighbors(Point position, List<Node> list)
         {
-            List<Node> result = new();
+            list.Clear();
             Node NeighboringNode;
 
             #region Get neighbors
-            if (InBounds(grid, positionX + 1, positionY))
+            if (InBounds(position.X + 1, position.Y))
             {
-                NeighboringNode = grid[positionX + 1, positionY].node;
+                NeighboringNode = GetNode(new Point(position.X + 1, position.Y));
 
-                result.Add(NeighboringNode);
+                list.Add(NeighboringNode);
             }
-            if (InBounds(grid, positionX - 1, positionY))
+            if (InBounds(position.X - 1, position.Y))
             {
-                NeighboringNode = grid[positionX - 1, positionY].node;
+                NeighboringNode = GetNode(new Point(position.X - 1, position.Y));
 
-                result.Add(NeighboringNode);
+                list.Add(NeighboringNode);
             }
-            if (InBounds(grid, positionX, positionY + 1))
+            if (InBounds(position.X, position.Y + 1))
             {
-                NeighboringNode = grid[positionX, positionY + 1].node;
+                NeighboringNode = GetNode(new Point(position.X, position.Y + 1));
 
-                result.Add(NeighboringNode);
+                list.Add(NeighboringNode);
             }
-            if (InBounds(grid, positionX, positionY - 1))
+            if (InBounds(position.X, position.Y - 1))
             {
-                NeighboringNode = grid[positionX, positionY - 1].node;
+                NeighboringNode = GetNode(new Point(position.X, position.Y - 1));
 
-                result.Add(NeighboringNode);
+                list.Add(NeighboringNode);
             }
 
-            if (InBounds(grid, positionX + 1, positionY + 1))
+            if (InBounds(position.X + 1, position.Y + 1))
             {
-                NeighboringNode = grid[positionX + 1, positionY + 1].node;
+                NeighboringNode = GetNode(new Point(position.X + 1, position.Y + 1));
 
-                result.Add(NeighboringNode);
+                list.Add(NeighboringNode);
             }
-            if (InBounds(grid, positionX + 1, positionY - 1))
+            if (InBounds(position.X + 1, position.Y - 1))
             {
-                NeighboringNode = grid[positionX + 1, positionY - 1].node;
+                NeighboringNode = GetNode(new Point(position.X + 1, position.Y - 1));
 
-                result.Add(NeighboringNode);
+                list.Add(NeighboringNode);
             }
-            if (InBounds(grid, positionX - 1, positionY - 1))
+            if (InBounds(position.X - 1, position.Y - 1))
             {
-                NeighboringNode = grid[positionX - 1, positionY - 1].node;
+                NeighboringNode = GetNode(new Point(position.X - 1, position.Y - 1));
 
-                result.Add(NeighboringNode);
+                list.Add(NeighboringNode);
             }
-            if (InBounds(grid, positionX - 1, positionY + 1))
+            if (InBounds(position.X - 1, position.Y + 1))
             {
-                NeighboringNode = grid[positionX - 1, positionY + 1].node;
+                NeighboringNode = GetNode(new Point(position.X - 1, position.Y + 1));
 
-                result.Add(NeighboringNode);
+                list.Add(NeighboringNode);
             }
             #endregion
-
-            return result;
         }
 
-        private static bool InBounds(Tile[,] map, int x, int y)
+        private bool InBounds(int x, int y)
         {
-            return 0 <= y && y < map.GetLength(1) && 0 <= x && x < map.GetLength(0);
+            return 0 <= y && y < gridHeight && 0 <= x && x < gridWidth;
         }
     }
 }

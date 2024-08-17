@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,33 +8,42 @@ using System.Threading.Tasks;
 
 namespace ARPG
 {
-    public class Node
+    public struct Node(Vector2 position, Point gridPosition, bool walkable, Tile tile)
     {
-        public Vector2 Position { get; private set; }
-        public int GridX { get; private set; }
-        public int GridY { get; private set; }
+        public readonly bool Walkable => walkable;
+        public readonly Vector2 Position => position;
+        public readonly Point GridPosition => gridPosition;
+        public readonly Rectangle Hitbox => tile.Hitbox;
 
         public int gCost; // Cost from starting node
         public int hCost; // How far away from end node
-        public int fCost; // GCost + hCost
-        public Tile Tile { get; private set; }
-        public Node parent; // What node that "owns" the current node
-        public bool Walkable { get; private set; }
+        public readonly int FCost => hCost + gCost;
 
-        public Node(Vector2 position, int gridX, int gridY, bool walkable, Tile tile)
-        {
-            Position = position;
-            GridX = gridX;
-            GridY = gridY;
-            Walkable = walkable;
-            Tile = tile;
-        }
+        public Point? parent; // What node that "owns" this node
 
-        public void ResetNode()
+        public void SetCosts(Node prevNode, Node targetNode)
         {
-            gCost = 0;
-            hCost = 0;
-            fCost = 0;
+            #region Get base movement cost
+            int baseGCost;
+
+            if (prevNode.GridPosition.X == GridPosition.X || prevNode.GridPosition.Y == GridPosition.Y)
+            {
+                baseGCost = 10;
+            }
+            else
+            {
+                baseGCost = 14;
+            }
+            #endregion
+
+            #region Set values
+            // Give the costs for node
+            hCost = Library.AStarManager.GetDistance(this, targetNode);
+            gCost = prevNode.gCost + baseGCost;
+
+            // Give the neighbor the node that "owns" it
+            parent = prevNode.GridPosition;
+            #endregion
         }
     }
 }

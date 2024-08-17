@@ -54,9 +54,9 @@ namespace ARPG
             SetPosition(Position + direction * speed * (float)gameTime.ElapsedGameTime.TotalSeconds);
         }
 
-        public Node GetNode(Rectangle hitbox, Room room)
+        public static Node? GetNode(Rectangle hitbox, Room room)
         {
-            Node node = null;
+            Node? node = null;
 
             if (room != null)
             {

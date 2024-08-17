@@ -11,7 +11,7 @@ namespace ARPG
         public PlayerHurtState hurtState = new();
         #endregion
 
-        public Node currentNode;
+        public Node? currentNode;
         public event EventHandler OnNodeChange;
 
         public Player(Vector2 startingPosition)
@@ -62,7 +62,7 @@ namespace ARPG
 
         public void CheckForNodeChange()
         {
-            if (currentNode == null || !feetHitbox.Intersects(currentNode.Tile.Hitbox))
+            if (currentNode == null || !feetHitbox.Intersects(currentNode.Value.Hitbox))
             {
                 currentNode = GetNode(feetHitbox, Library.activeRoom);
 

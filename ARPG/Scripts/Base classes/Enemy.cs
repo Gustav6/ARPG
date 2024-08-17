@@ -76,30 +76,22 @@ namespace ARPG
             if (CanMove && Library.playerInstance != null)
             {
                 FindPath();
-
-                if (CurrentState != movingState)
-                {
-                    if (path != null && path.Count > 0)
-                    {
-                        SwitchState(movingState);
-                    }
-                }
             }
         }
 
         public void FindPath()
         {
-            Node startingNode = GetNode(feetHitbox, Library.activeRoom), targetNode = Library.playerInstance.currentNode;
+            Node? startingNode = GetNode(feetHitbox, Library.activeRoom), targetNode = Library.playerInstance.currentNode;
 
             if (startingNode != null && targetNode != null)
             {
-                path = AStar.GetPath(Library.activeRoom.grid, startingNode, targetNode);
+                path = Library.AStarManager.FindPath(Library.activeRoom.grid, startingNode.Value, targetNode.Value);
 
-                if (path.Count > 0)
+                if (CurrentState != movingState && path.Count > 0)
                 {
                     SwitchState(movingState);
                 }
-                else if (CurrentState != idleState)
+                else if (CurrentState != idleState && path.Count == 0)
                 {
                     SwitchState(idleState);
                 }
@@ -124,7 +116,7 @@ namespace ARPG
         {
             if (HasValidPath())
             {
-                if (BoundingBox.Intersects(path.Last().Tile.Hitbox))
+                if (BoundingBox.Intersects(path.Last().Hitbox))
                 {
                     return true;
                 }
@@ -243,7 +235,7 @@ namespace ARPG
     public class EnemyMovingState : EntityBaseState
     {
         private Enemy enemy;
-        private Tile nextTile;
+        private Node? nextTarget;
 
         public override void EnterState(Entity enemyReference)
         {
@@ -262,16 +254,23 @@ namespace ARPG
 
             //PathFind();
 
-            if (enemy.canPathFind && nextTile != null)
+            if (enemy.canPathFind && nextTarget != null)
             {
-                if (enemy.HasReachedTarget())
+                if (enemy.path.Count > 0)
                 {
-                    enemy.direction = Vector2.Zero;
+                    if (enemy.HasReachedTarget())
+                    {
+                        enemy.direction = Vector2.Zero;
+                    }
+                    else if (enemy.BoundingBox.Intersects(nextTarget.Value.Hitbox))
+                    {
+                        enemy.path.RemoveAt(0);
+                        FollowPath();
+                    }
                 }
-                else if (enemy.BoundingBox.Intersects(nextTile.Hitbox))
+                else
                 {
-                    enemy.path.RemoveAt(0);
-                    FollowPath();
+                    enemy.SwitchState(enemy.idleState);
                 }
             }
 
@@ -283,11 +282,16 @@ namespace ARPG
 
         private void FollowPath()
         {
-            nextTile = enemy.path.First().Tile;
-            enemy.direction = DirectionTowardsNode(nextTile);
+            if (enemy.path.Count == 0)
+            {
+                return;
+            }
+
+            nextTarget = enemy.path.First();
+            enemy.direction = DirectionTowardsNode(nextTarget.Value);
         }
 
-        private Vector2 DirectionTowardsNode(Tile target)
+        private Vector2 DirectionTowardsNode(Node target)
         {
             Vector2 result = target.Position - enemy.feetHitbox.Location.ToVector2();
 
@@ -298,7 +302,7 @@ namespace ARPG
 
         public override void ExitState()
         {
-            nextTile = null;
+            nextTarget = null;
         }
     }
     #endregion

@@ -119,7 +119,7 @@ namespace ARPG
 
             if (Library.activeRoom != null)
             {
-                //Library.activeRoom.Draw(spriteBatch);
+                Library.activeRoom.Draw(spriteBatch);
             }
 
             for (int i = 0; i < Library.gameObjects.Count; i++)
