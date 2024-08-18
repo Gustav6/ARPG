@@ -85,7 +85,7 @@ namespace ARPG
 
             if (startingNode != null && targetNode != null)
             {
-                path = Library.AStarManager.FindPath(Library.activeRoom.grid, startingNode, targetNode);
+                path = Library.AStarManager.FindPath(Library.activeRoom.grid, startingNode.Value, targetNode.Value);
 
                 if (CurrentState != movingState && path.Count > 0)
                 {
@@ -262,7 +262,7 @@ namespace ARPG
                     {
                         enemy.direction = Vector2.Zero;
                     }
-                    else if (enemy.BoundingBox.Intersects(nextTarget.Hitbox))
+                    else if (enemy.BoundingBox.Intersects(nextTarget.Value.Hitbox))
                     {
                         enemy.path.RemoveAt(0);
                         FollowPath();
@@ -288,7 +288,7 @@ namespace ARPG
             }
 
             nextTarget = enemy.path.First();
-            enemy.direction = DirectionTowardsNode(nextTarget);
+            enemy.direction = DirectionTowardsNode(nextTarget.Value);
         }
 
         private Vector2 DirectionTowardsNode(Node target)

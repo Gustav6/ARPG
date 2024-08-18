@@ -3,6 +3,14 @@
   "WorkspaceRootPath": "C:\\Users\\gusta\\Documents\\Github\\ARPG\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{BD1AB872-6DC9-4684-84A6-701AE117E272}|ARPG\\ARPG.csproj|c:\\users\\gusta\\documents\\github\\arpg\\arpg\\scripts\\characters\\player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{BD1AB872-6DC9-4684-84A6-701AE117E272}|ARPG\\ARPG.csproj|solutionrelative:arpg\\scripts\\characters\\player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{BD1AB872-6DC9-4684-84A6-701AE117E272}|ARPG\\ARPG.csproj|c:\\users\\gusta\\documents\\github\\arpg\\arpg\\scripts\\base classes\\enemy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{BD1AB872-6DC9-4684-84A6-701AE117E272}|ARPG\\ARPG.csproj|solutionrelative:arpg\\scripts\\base classes\\enemy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{BD1AB872-6DC9-4684-84A6-701AE117E272}|ARPG\\ARPG.csproj|c:\\users\\gusta\\documents\\github\\arpg\\arpg\\scripts\\pathfinding\\heap.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{BD1AB872-6DC9-4684-84A6-701AE117E272}|ARPG\\ARPG.csproj|solutionrelative:arpg\\scripts\\pathfinding\\heap.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -17,14 +25,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{BD1AB872-6DC9-4684-84A6-701AE117E272}|ARPG\\ARPG.csproj|c:\\users\\gusta\\documents\\github\\arpg\\arpg\\scripts\\pathfinding\\astar.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{BD1AB872-6DC9-4684-84A6-701AE117E272}|ARPG\\ARPG.csproj|solutionrelative:arpg\\scripts\\pathfinding\\astar.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD1AB872-6DC9-4684-84A6-701AE117E272}|ARPG\\ARPG.csproj|c:\\users\\gusta\\documents\\github\\arpg\\arpg\\scripts\\characters\\player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{BD1AB872-6DC9-4684-84A6-701AE117E272}|ARPG\\ARPG.csproj|solutionrelative:arpg\\scripts\\characters\\player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD1AB872-6DC9-4684-84A6-701AE117E272}|ARPG\\ARPG.csproj|c:\\users\\gusta\\documents\\github\\arpg\\arpg\\scripts\\base classes\\enemy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{BD1AB872-6DC9-4684-84A6-701AE117E272}|ARPG\\ARPG.csproj|solutionrelative:arpg\\scripts\\base classes\\enemy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{BD1AB872-6DC9-4684-84A6-701AE117E272}|ARPG\\ARPG.csproj|c:\\users\\gusta\\documents\\github\\arpg\\arpg\\scripts\\pathfinding\\test.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -58,11 +58,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 12,
+          "SelectedChildIndex": 18,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "AStar.cs",
               "DocumentMoniker": "C:\\Users\\gusta\\Documents\\Github\\ARPG\\ARPG\\Scripts\\PathFinding\\AStar.cs",
               "RelativeDocumentMoniker": "ARPG\\Scripts\\PathFinding\\AStar.cs",
@@ -124,25 +124,24 @@
               "RelativeToolTip": "ARPG\\Scripts\\PathFinding\\Test.cs",
               "ViewState": "AgIAAFcAAAAAAAAAAAAAAHsAAAAHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-08-18T16:37:38.699Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-18T16:37:38.699Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "Heap.cs",
               "DocumentMoniker": "C:\\Users\\gusta\\Documents\\Github\\ARPG\\ARPG\\Scripts\\PathFinding\\Heap.cs",
               "RelativeDocumentMoniker": "ARPG\\Scripts\\PathFinding\\Heap.cs",
               "ToolTip": "C:\\Users\\gusta\\Documents\\Github\\ARPG\\ARPG\\Scripts\\PathFinding\\Heap.cs",
               "RelativeToolTip": "ARPG\\Scripts\\PathFinding\\Heap.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAdAAAAAAAAAA==",
+              "ViewState": "AgIAAEgAAAAAAAAAAAAAAGYAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-08-18T12:27:10.438Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "Room.cs",
               "DocumentMoniker": "C:\\Users\\gusta\\Documents\\Github\\ARPG\\ARPG\\Scripts\\Procedural Generation\\Room.cs",
               "RelativeDocumentMoniker": "ARPG\\Scripts\\Procedural Generation\\Room.cs",
@@ -150,12 +149,11 @@
               "RelativeToolTip": "ARPG\\Scripts\\Procedural Generation\\Room.cs",
               "ViewState": "AgIAAAsAAAAAAAAAAAAQwEUAAAAvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-08-18T16:22:11.777Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-18T16:22:11.777Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "Node.cs",
               "DocumentMoniker": "C:\\Users\\gusta\\Documents\\Github\\ARPG\\ARPG\\Scripts\\PathFinding\\Node.cs",
               "RelativeDocumentMoniker": "ARPG\\Scripts\\PathFinding\\Node.cs",
@@ -163,8 +161,7 @@
               "RelativeToolTip": "ARPG\\Scripts\\PathFinding\\Node.cs",
               "ViewState": "AgIAABQAAAAAAAAAAAAIwCkAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-08-14T16:55:07.688Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-14T16:55:07.688Z"
             },
             {
               "$type": "Document",
@@ -176,8 +173,7 @@
               "RelativeToolTip": "ARPG\\Scripts\\Base classes\\Moveable.cs",
               "ViewState": "AgIAACgAAAAAAAAAAAAAAEcAAAARAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-08-15T13:02:43.689Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-15T13:02:43.689Z"
             },
             {
               "$type": "Document",
@@ -189,31 +185,30 @@
               "RelativeToolTip": "ARPG\\Scripts\\Base classes\\Entity.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAFkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-07-11T21:48:14.515Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-07-11T21:48:14.515Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 1,
               "Title": "Enemy.cs",
               "DocumentMoniker": "C:\\Users\\gusta\\Documents\\Github\\ARPG\\ARPG\\Scripts\\Base classes\\Enemy.cs",
               "RelativeDocumentMoniker": "ARPG\\Scripts\\Base classes\\Enemy.cs",
               "ToolTip": "C:\\Users\\gusta\\Documents\\Github\\ARPG\\ARPG\\Scripts\\Base classes\\Enemy.cs",
               "RelativeToolTip": "ARPG\\Scripts\\Base classes\\Enemy.cs",
-              "ViewState": "AgIAAAYBAAAAAAAAAAAAACIBAAA9AAAAAAAAAA==",
+              "ViewState": "AgIAAAUBAAAAAAAAAIAwwCIBAABDAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-07-11T21:13:12.155Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 0,
               "Title": "Player.cs",
               "DocumentMoniker": "C:\\Users\\gusta\\Documents\\Github\\ARPG\\ARPG\\Scripts\\Characters\\Player.cs",
               "RelativeDocumentMoniker": "ARPG\\Scripts\\Characters\\Player.cs",
               "ToolTip": "C:\\Users\\gusta\\Documents\\Github\\ARPG\\ARPG\\Scripts\\Characters\\Player.cs",
               "RelativeToolTip": "ARPG\\Scripts\\Characters\\Player.cs",
-              "ViewState": "AgIAACUAAAAAAAAAAAAiwEMAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAACMAAAAAAAAAAAAMwEMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-07-11T17:02:41.378Z",
               "EditorCaption": ""
