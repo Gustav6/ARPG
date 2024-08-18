@@ -16,7 +16,9 @@ namespace ARPG
 
         private List<Node> path = [];
         private HashSet<Point> closedNodes = [];
-        private List<Point> openNodes = [];
+
+        //private List<Point> openNodes = [];
+        private Heap<Node> openNodes;
 
         private List<Node> hCostNeighbors = [], currentNodeNeighbors = [];
 
@@ -38,9 +40,12 @@ namespace ARPG
 
             path.Clear();
             closedNodes.Clear();
-            openNodes.Clear();
 
-            openNodes.Add(start);
+            //openNodes.Clear();
+            //openNodes.Add(start);
+
+            openNodes = new Heap<Node>(gridWidth * gridHeight);
+            openNodes.Add(ref _start);
 
             if (nodes == null || nodes.Length < grid.Length)
             {
@@ -56,21 +61,38 @@ namespace ARPG
 
             while (openNodes.Count > 0 && !FoundPath)
             {
-                currentNode = GetNode(openNodes[0]);
+                currentNode = openNodes.RemoveFirst();
 
-                #region Get node with lowest f cost
+                //currentNode = GetNode(openNodes[0]);
 
-                for (int i = 0; i < openNodes.Count; i++)
+                //#region Get node with lowest f cost
+
+                //for (int i = 0; i < openNodes.Count; i++)
+                //{
+                //    Node temp = GetNode(openNodes[i]);
+
+                //    if (currentNode.FCost > temp.FCost || currentNode.FCost == temp.FCost && currentNode.hCost > temp.hCost)
+                //    {
+                //        currentNode = temp;
+                //    }
+                //}
+
+                //openNodes.Remove(currentNode.GridPosition);
+                //#endregion
+
+                closedNodes.Add(currentNode.GridPosition);
+
+                if (currentNode.GridPosition == target)
                 {
-                    Node temp = GetNode(openNodes[i]);
+                    FoundPath = true;
+                    path = RetracePath(currentNode);
 
-                    if (currentNode.FCost > temp.FCost || currentNode.FCost == temp.FCost && currentNode.hCost > temp.hCost)
-                    {
-                        currentNode = temp;
-                    }
+                    sw.Stop();
+
+                    Debug.WriteLine("Path found: " + sw.Elapsed);
+
+                    break;
                 }
-
-                #endregion
 
                 #region Check neighbors
 
@@ -87,34 +109,50 @@ namespace ARPG
 
                     int newPathCost = currentNode.gCost + GetDistance(currentNode, neighbor);
 
-                    if (newPathCost < neighbor.gCost || !openNodes.Contains(neighbor.GridPosition))
+                    if (newPathCost < neighbor.gCost || !openNodes.Contains(neighbor))
                     {
-                        GetNode(neighbor.GridPosition).SetCosts(currentNode, GetNode(target));
+                        SetCosts(ref currentNode, ref neighbor);
 
-                        if (!openNodes.Contains(neighbor.GridPosition))
+                        if (!openNodes.Contains(neighbor))
                         {
-                            openNodes.Add(neighbor.GridPosition);
+                            openNodes.Add(ref neighbor);
+                        }
+                        else
+                        {
+                            openNodes.UpdateItem(neighbor);
                         }
                     }
                 }
 
                 #endregion
-
-                closedNodes.Add(currentNode.GridPosition);
-                openNodes.Remove(currentNode.GridPosition);
-
-                if (currentNode.GridPosition == target)
-                {
-                    FoundPath = true;
-                    path = RetracePath(currentNode);
-
-                    sw.Stop();
-
-                    Debug.WriteLine("Path found: " + sw.Elapsed);
-                }
             }
 
             return new List<Node>(path);
+        }
+
+        public void SetCosts(ref Node currentNode, ref Node neighborNode)
+        {
+            #region Get base movement cost
+            int baseGCost;
+
+            if (currentNode.GridPosition.X == neighborNode.GridPosition.X || currentNode.GridPosition.Y == neighborNode.GridPosition.Y)
+            {
+                baseGCost = 10;
+            }
+            else
+            {
+                baseGCost = 14;
+            }
+            #endregion
+
+            #region Set values
+            // Give the costs for node
+            neighborNode.hCost = GetDistance(neighborNode, GetNode(target));
+            neighborNode.gCost = currentNode.gCost + baseGCost;
+
+            // Give the neighbor the node that "owns" it
+            neighborNode.parent = currentNode.GridPosition;
+            #endregion
         }
 
         private List<Node> RetracePath(Node targetNode)

@@ -62,7 +62,7 @@ namespace ARPG
 
         public void CheckForNodeChange()
         {
-            if (currentNode == null || !feetHitbox.Intersects(currentNode.Value.Hitbox))
+            if (currentNode == null || !feetHitbox.Intersects(currentNode.Hitbox))
             {
                 currentNode = GetNode(feetHitbox, Library.activeRoom);
 

@@ -6,22 +6,17 @@ using System.Threading.Tasks;
 
 namespace ARPG
 {
-    public class Heap<T> where T : IHeapItem<T>
+    public class Heap<T>(int maxHeapSize) where T : IHeapItem<T>
     {
-        T[] items;
+        T[] items = new T[maxHeapSize];
         int currentItemCount;
         public int Count { get { return currentItemCount; } }
 
-        public Heap(int maxHeapSize)
-        {
-            items = new T[maxHeapSize];
-        }
-
-        public void Add(T item)
+        public void Add(ref T item)
         {
             item.HeapIndex = currentItemCount;
             items[currentItemCount] = item;
-            SortUp(item);
+            SortUp(ref item);
             currentItemCount++;
         }
 
@@ -42,7 +37,7 @@ namespace ARPG
 
         public void UpdateItem(T item)
         {
-            SortUp(item);
+            SortUp(ref item);
         }
 
         public void SortDown(T item)
@@ -67,7 +62,7 @@ namespace ARPG
 
                     if (item.CompareTo(items[swapIndex]) < 0)
                     {
-                        Swap(item, items[swapIndex]);
+                        Swap(ref item, ref items[swapIndex]);
                     }
                     else
                     {
@@ -81,7 +76,7 @@ namespace ARPG
             }
         }
 
-        private void SortUp(T item)
+        private void SortUp(ref T item)
         {
             int parentIndex = (item.HeapIndex - 1) / 2;
 
@@ -91,7 +86,7 @@ namespace ARPG
 
                 if (item.CompareTo(parentItem) > 0)
                 {
-                    Swap(item, parentItem);
+                    Swap(ref item, ref parentItem);
                 }
                 else
                 {
@@ -102,15 +97,10 @@ namespace ARPG
             }
         }
 
-        private void Swap(T itemA, T itemB)
+        private void Swap(ref T itemA, ref T itemB)
         {
-            items[itemA.HeapIndex] = itemB;
-            items[itemB.HeapIndex] = itemA;
-
-            int itemAIndex = itemA.HeapIndex;
-
-            itemA.HeapIndex = itemB.HeapIndex;
-            itemB.HeapIndex = itemAIndex;
+            (itemA, itemB) = (itemB, itemA);
+            (itemA.HeapIndex, itemB.HeapIndex) = (itemB.HeapIndex, itemA.HeapIndex);
         }
     }
 }

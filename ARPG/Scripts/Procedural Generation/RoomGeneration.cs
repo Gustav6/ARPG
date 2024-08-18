@@ -12,7 +12,7 @@ namespace ARPG
         private static int roomsLeft;
         private static readonly int maximumAmountOfRooms = 15;
 
-        public static int minimumAmountOfEnemies = 5, maximumAmountOfEnemies = 15;
+        public static int minimumAmountOfEnemies = 1, maximumAmountOfEnemies = 1;
         #endregion
 
 

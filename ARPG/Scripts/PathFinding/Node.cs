@@ -40,30 +40,5 @@ namespace ARPG
 
             return -compare;
         }
-
-        public void SetCosts(Node prevNode, Node targetNode)
-        {
-            #region Get base movement cost
-            int baseGCost;
-
-            if (prevNode.GridPosition.X == GridPosition.X || prevNode.GridPosition.Y == GridPosition.Y)
-            {
-                baseGCost = 10;
-            }
-            else
-            {
-                baseGCost = 14;
-            }
-            #endregion
-
-            #region Set values
-            // Give the costs for node
-            hCost = Library.AStarManager.GetDistance(this, targetNode);
-            gCost = prevNode.gCost + baseGCost;
-
-            // Give the neighbor the node that "owns" it
-            parent = prevNode.GridPosition;
-            #endregion
-        }
     }
 }
