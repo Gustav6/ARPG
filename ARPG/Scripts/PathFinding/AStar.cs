@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace ARPG
 {
@@ -17,13 +18,15 @@ namespace ARPG
         private HashSet<Point> closedNodes = [];
         private List<Point> openNodes = [];
 
-        private List<Node> hCostNeighbors = [];
-        private List<Node> currentNodeNeighbors = [];
+        private List<Node> hCostNeighbors = [], currentNodeNeighbors = [];
 
         public List<Node> FindPath(Tile[,] grid, Node _start, Node _target)
         {
             if (!_target.Walkable)
                 return [];
+
+            Stopwatch sw = Stopwatch.StartNew();
+            sw.Start();
 
             start = _start.GridPosition;
             target = _target.GridPosition;
@@ -86,9 +89,12 @@ namespace ARPG
 
                     if (newPathCost < neighbor.gCost || !openNodes.Contains(neighbor.GridPosition))
                     {
-                        openNodes.Add(neighbor.GridPosition);
-
                         GetNode(neighbor.GridPosition).SetCosts(currentNode, GetNode(target));
+
+                        if (!openNodes.Contains(neighbor.GridPosition))
+                        {
+                            openNodes.Add(neighbor.GridPosition);
+                        }
                     }
                 }
 
@@ -101,6 +107,10 @@ namespace ARPG
                 {
                     FoundPath = true;
                     path = RetracePath(currentNode);
+
+                    sw.Stop();
+
+                    Debug.WriteLine("Path found: " + sw.Elapsed);
                 }
             }
 

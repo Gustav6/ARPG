@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ARPG")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a901451de98b45d2417541f95d6814dd82e6f636")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c0dbd8fa95c2858cc5fc9f89f5fba56d05a51f52")]
 [assembly: System.Reflection.AssemblyProductAttribute("ARPG")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ARPG")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

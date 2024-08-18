@@ -293,7 +293,7 @@ namespace ARPG
 
         private Vector2 DirectionTowardsNode(Node target)
         {
-            Vector2 result = target.Position - enemy.feetHitbox.Location.ToVector2();
+            Vector2 result = target.WorldPosition - enemy.feetHitbox.Location.ToVector2();
 
             result.Normalize();
 
