@@ -27,8 +27,6 @@ namespace ARPG
             #endregion
 
             BoundingBox = new Rectangle((int)Position.X, (int)Position.Y, texture.Width, texture.Height);
-            feetHitbox = new Rectangle((int)Position.X, (int)Position.Y, texture.Width, 10);
-            feetHitboxOffset = texture.Height / 2 + feetHitbox.Height;
         }
 
         public override void CallOnInstantiate()

@@ -11,7 +11,7 @@ namespace ARPG
     public interface IDamageable
     {
         public void ApplyDamage(float damageAmount);
-        public void ApplyKnockback(float knockbackStrength, Vector2 direction);
+        public void ApplyKnockback(float knockbackStrength, Vector2 projectileDirection);
     }
 
     public interface ICollidable

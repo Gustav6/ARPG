@@ -18,7 +18,7 @@ namespace ARPG
 
         public Rectangle bounds;
 
-        public List<Enemy> enemies = new();
+        public List<Enemy> enemies = [];
         public int amountOfEnemies;
 
         public bool hasExitedRoom = false;

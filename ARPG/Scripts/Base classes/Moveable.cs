@@ -53,26 +53,5 @@ namespace ARPG
 
             SetPosition(Position + direction * speed * (float)gameTime.ElapsedGameTime.TotalSeconds);
         }
-
-        public static Node? GetNode(Rectangle hitbox, Room room)
-        {
-            Node? node = null;
-
-            if (room != null)
-            {
-                for (int x = 0; x < room.grid.GetLength(0); x++)
-                {
-                    for (int y = 0; y < room.grid.GetLength(1); y++)
-                    {
-                        if (hitbox.Intersects(room.grid[x, y].Hitbox))
-                        {
-                            node = room.grid[x, y].node;
-                        }
-                    }
-                }
-            }
-
-            return node;
-        }
     }
 }

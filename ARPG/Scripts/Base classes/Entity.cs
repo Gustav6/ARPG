@@ -28,15 +28,13 @@ namespace ARPG
 
         #region Hitbox variables
 
-        public Rectangle feetHitbox;
-        public int feetHitboxOffset;
-
         private Rectangle hitbox;
         public Rectangle BoundingBox
         {
             get { return hitbox; }
             set { hitbox = value; }
         }
+
         #endregion
 
         #region Health variables
@@ -135,7 +133,6 @@ namespace ARPG
             leftHand?.UpdatePosition(-handOffset);
             rightHand?.UpdatePosition(handOffset);
             hitbox.Location = new Vector2(Position.X, Position.Y).ToPoint();
-            feetHitbox.Location = new Point(hitbox.Location.X, hitbox.Location.Y + feetHitboxOffset);
         }
 
         #endregion

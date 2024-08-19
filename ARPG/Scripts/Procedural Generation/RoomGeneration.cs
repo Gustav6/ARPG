@@ -7,10 +7,10 @@ namespace ARPG
     public static class RoomGeneration
     {
         #region Room generation variables
-        private static readonly int minRoomWidth = 20, minRoomHeight = 20, maxRoomWidth = 75, maxRoomHeight = 75;
+        private static readonly int minRoomWidth = 25, minRoomHeight = 25, maxRoomWidth = 75, maxRoomHeight = 75;
 
         private static int roomsLeft;
-        private static readonly int maximumAmountOfRooms = 15;
+        private static readonly int maximumAmountOfRooms = 8;
 
         public static int minimumAmountOfEnemies = 1, maximumAmountOfEnemies = 1;
         #endregion
@@ -31,13 +31,13 @@ namespace ARPG
                 #region Random variables
                 int width = Library.rng.Next(minRoomWidth, maxRoomWidth);
                 int height = Library.rng.Next(minRoomHeight, maxRoomHeight);
-                int xPosition = Library.rng.Next(0, Library.tileMap.tileMapWidth - width);
-                int yPosition = Library.rng.Next(0, Library.tileMap.tileMapHeight - height);
+                int xPosition = Library.rng.Next(0, Library.tileMap.tileMapSize.X - width);
+                int yPosition = Library.rng.Next(0, Library.tileMap.tileMapSize.Y - height);
                 #endregion
 
                 int triesRemaining = 3;
 
-                while (roomsLeft > 0 && triesRemaining > 0)
+                while (triesRemaining > 0)
                 {
                     #region Generate a new room
 
@@ -46,7 +46,7 @@ namespace ARPG
 
                     #endregion
 
-                    if (CanRoomBePlaced(xPosition, yPosition, currentRoom.grid))
+                    if (RoomCanBePlaced(xPosition, yPosition, currentRoom.grid))
                     {
                         PlaceRoom(xPosition, yPosition, currentRoom.grid);
 
@@ -69,18 +69,18 @@ namespace ARPG
                         }
 
                         Library.tileMap.rooms.Add(currentRoom);
-
-                        roomsLeft--;
                     }
                     else
                     {
                         triesRemaining--;
                     }
                 }
+
+                roomsLeft--;
             }
         }
 
-        private static bool CanRoomBePlaced(int xPosition, int yPosition, Tile[,] room)
+        private static bool RoomCanBePlaced(int xPosition, int yPosition, Tile[,] room)
         {
             for (int x = 0; x < room.GetLength(0); x++)
             {

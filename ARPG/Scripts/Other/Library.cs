@@ -23,8 +23,6 @@ namespace ARPG
         public static readonly float rotate360Degrees = MathF.PI * 2;
         #endregion
 
-        public static AStar AStarManager = new();
-
         public static Random rng = new();
 
         public static Player playerInstance;

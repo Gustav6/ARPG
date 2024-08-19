@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using System.Diagnostics;
 
 namespace ARPG
 {
@@ -11,8 +12,9 @@ namespace ARPG
         public PlayerHurtState hurtState = new();
         #endregion
 
-        public Node? currentNode;
+        public Node currentNode;
         public event EventHandler OnNodeChange;
+        public Vector2 prevPosition;
 
         public Player(Vector2 startingPosition)
         {
@@ -30,12 +32,12 @@ namespace ARPG
             #endregion
 
             BoundingBox = new Rectangle((int)Position.X, (int)Position.Y, texture.Width, texture.Height);
-            feetHitbox = new Rectangle((int)Position.X, (int)Position.Y, texture.Width, 10);
-            feetHitboxOffset = texture.Height / 2 + feetHitbox.Height;
         }
 
         public override void CallOnInstantiate()
         {
+            prevPosition = Vector2.Zero;
+
             SwitchState(idleState);
 
             base.CallOnInstantiate();
@@ -60,14 +62,9 @@ namespace ARPG
             SwitchState(hurtState);
         }
 
-        public void CheckForNodeChange()
+        public void NodeChanged()
         {
-            if (currentNode == null || !feetHitbox.Intersects(currentNode.Value.Hitbox))
-            {
-                currentNode = GetNode(feetHitbox, Library.activeRoom);
-
-                OnNodeChange?.Invoke(this, EventArgs.Empty);
-            }
+            OnNodeChange?.Invoke(this, EventArgs.Empty);
         }
     }
 
@@ -115,12 +112,31 @@ namespace ARPG
 
             player.Move(gameTime);
             player.UpdateHitboxAndHands();
-            player.CheckForNodeChange();
+
+            if (HasPlayerMoved(player.Position, player.prevPosition, TextureManager.tileSize))
+            {
+                player.NodeChanged();
+                player.prevPosition = player.Position;
+            }
 
             if (!player.CanMove || player.direction == Vector2.Zero)
             {
                 player.SwitchState(player.idleState);
             }
+        }
+
+        private bool HasPlayerMoved(Vector2 currentPosition, Vector2 previousPosition, float minimumMoveAmount)
+        {
+            if (currentPosition.X < previousPosition.X - minimumMoveAmount || currentPosition.X > previousPosition.X + minimumMoveAmount)
+            {
+                return true;
+            }
+            else if (currentPosition.Y < previousPosition.Y - minimumMoveAmount || currentPosition.Y > previousPosition.Y + minimumMoveAmount)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public override void ExitState()

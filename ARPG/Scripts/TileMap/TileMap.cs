@@ -12,11 +12,10 @@ namespace ARPG
     {
         #region Constant variables
         public Tile[,] masterMap;
-        public List<Room> rooms = new();
+        public List<Room> rooms = [];
         #endregion
 
-        public readonly int tileMapWidth = 350;
-        public readonly int tileMapHeight = 350;
+        public Point tileMapSize = new(250, 250);
 
         public void GenerateNewMap()
         {
@@ -33,7 +32,7 @@ namespace ARPG
 
             rooms.Clear();
             Library.activeRoom = null;
-            masterMap = new Tile[tileMapWidth, tileMapHeight];
+            masterMap = new Tile[tileMapSize.X, tileMapSize.Y];
 
             RoomGeneration.CallGeneration();
         }

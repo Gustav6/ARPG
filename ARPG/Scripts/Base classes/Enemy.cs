@@ -73,19 +73,9 @@ namespace ARPG
         #region Methods related to pathfinding
         public void PlayerInstance_OnNodeChange(object sender, EventArgs e)
         {
-            if (CanMove && Library.playerInstance != null)
+            if (Library.gameObjects.Contains(this) && CanMove)
             {
-                FindPath();
-            }
-        }
-
-        public void FindPath()
-        {
-            Node? startingNode = GetNode(feetHitbox, Library.activeRoom), targetNode = Library.playerInstance.currentNode;
-
-            if (startingNode != null && targetNode != null)
-            {
-                path = Library.AStarManager.FindPath(Library.activeRoom.grid, startingNode.Value, targetNode.Value);
+                path = AStar.instance.FindPath(Library.activeRoom.grid, Position, Library.playerInstance.Position);
 
                 if (CurrentState != movingState && path.Count > 0)
                 {
@@ -114,12 +104,9 @@ namespace ARPG
 
         public bool HasReachedTarget()
         {
-            if (HasValidPath())
+            if (HasValidPath() && BoundingBox.Intersects(path.Last().hitbox))
             {
-                if (BoundingBox.Intersects(path.Last().Hitbox))
-                {
-                    return true;
-                }
+                return true;
             }
 
             return false;
@@ -235,7 +222,7 @@ namespace ARPG
     public class EnemyMovingState : EntityBaseState
     {
         private Enemy enemy;
-        private Node? nextTarget;
+        private Node nextTarget;
 
         public override void EnterState(Entity enemyReference)
         {
@@ -252,8 +239,6 @@ namespace ARPG
             enemy.Move(gameTime);
             enemy.UpdateHitboxAndHands();
 
-            //PathFind();
-
             if (enemy.canPathFind && nextTarget != null)
             {
                 if (enemy.path.Count > 0)
@@ -262,7 +247,7 @@ namespace ARPG
                     {
                         enemy.direction = Vector2.Zero;
                     }
-                    else if (enemy.BoundingBox.Intersects(nextTarget.Value.Hitbox))
+                    else if (enemy.BoundingBox.Intersects(nextTarget.hitbox))
                     {
                         enemy.path.RemoveAt(0);
                         FollowPath();
@@ -288,12 +273,12 @@ namespace ARPG
             }
 
             nextTarget = enemy.path.First();
-            enemy.direction = DirectionTowardsNode(nextTarget.Value);
+            enemy.direction = DirectionTowardsNode(nextTarget);
         }
 
         private Vector2 DirectionTowardsNode(Node target)
         {
-            Vector2 result = target.WorldPosition - enemy.feetHitbox.Location.ToVector2();
+            Vector2 result = target.worldPosition - enemy.Position;
 
             result.Normalize();
 
