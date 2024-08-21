@@ -8,9 +8,12 @@ namespace ARPG
 {
     public class Heap<T>(int maxHeapSize) where T : IHeapItem<T>
     {
-        T[] items = new T[maxHeapSize];
-        int currentItemCount;
+        public readonly int length = maxHeapSize;
+        private readonly T[] items = new T[maxHeapSize];
+        private int currentItemCount;
+
         public int Count { get { return currentItemCount; } }
+
         public void Add(T item)
         {
             item.HeapIndex = currentItemCount;
@@ -37,6 +40,16 @@ namespace ARPG
         public bool Contains(T item)
         {
             return Equals(items[item.HeapIndex], item);
+        }
+
+        public void Clear()
+        {
+            for (int i = currentItemCount; i >= 0; i--)
+            {
+                items[i] = default;
+            }
+
+            currentItemCount = 0;
         }
 
         void SortDown(T item)

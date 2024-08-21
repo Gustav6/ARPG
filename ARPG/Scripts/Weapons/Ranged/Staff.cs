@@ -17,14 +17,14 @@ namespace ARPG
             ownerOfWeapon = owner;
 
             #region Draw variables
-            texture = TextureManager.WeaponTexturesPairs[WeaponTextures.Staff];
+            Texture = TextureManager.WeaponTexturesPairs[WeaponTextures.Staff];
             #endregion
         }
 
         public override void Attack()
         {
             spawnPosition = Position;
-            spawnPosition.Y -= texture.Height / 2;
+            spawnPosition.Y -= Texture.Height / 2;
 
             ShootProjectile(ProjectileType.Fireball, DirectionTowardsMouse(spawnPosition));
         }

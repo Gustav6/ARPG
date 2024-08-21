@@ -22,11 +22,11 @@ namespace ARPG
             #endregion
 
             #region Draw variables
-            texture = TextureManager.EntityTexturesPairs[EntityTextures.LargeEnemy];
+            Texture = TextureManager.EntityTexturesPairs[EntityTextures.LargeEnemy];
             spriteLayer = TextureManager.SpriteLayers[SpriteLayer.Enemy];
             #endregion
 
-            BoundingBox = new Rectangle((int)Position.X, (int)Position.Y, texture.Width, texture.Height);
+            BoundingBox = new Rectangle((int)Position.X, (int)Position.Y, Texture.Width, Texture.Height);
         }
     }
 }

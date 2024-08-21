@@ -27,11 +27,11 @@ namespace ARPG
             #endregion
 
             #region Draw variables
-            texture = TextureManager.EntityTexturesPairs[EntityTextures.Player];
+            Texture = TextureManager.EntityTexturesPairs[EntityTextures.Player];
             spriteLayer = TextureManager.SpriteLayers[SpriteLayer.Player];
             #endregion
 
-            BoundingBox = new Rectangle((int)Position.X, (int)Position.Y, texture.Width, texture.Height);
+            BoundingBox = new Rectangle((int)Position.X, (int)Position.Y, Texture.Width, Texture.Height);
         }
 
         public override void CallOnInstantiate()
@@ -116,6 +116,11 @@ namespace ARPG
             if (HasPlayerMoved(player.Position, player.prevPosition, TextureManager.tileSize))
             {
                 player.NodeChanged();
+
+                Debug.WriteLine("total time taken: " + AStar.instance.totalTimeTaken.ToString() + " amount of requests: " + AStar.instance.amountOfRequests.ToString());
+                AStar.instance.amountOfRequests = 0;
+                AStar.instance.totalTimeTaken = TimeSpan.Zero;
+
                 player.prevPosition = player.Position;
             }
 

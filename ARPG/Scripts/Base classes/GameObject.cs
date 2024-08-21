@@ -11,7 +11,7 @@ namespace ARPG
     public abstract class GameObject : IRotatable
     {
         #region Draw variables
-        protected Texture2D texture;
+        public Texture2D Texture { get; protected set; }
         public Color color = Color.White;
         protected Vector2 origin;
         protected Vector2 scale = Vector2.One;
@@ -33,10 +33,10 @@ namespace ARPG
 
         public virtual void CallOnInstantiate()
         {
-            if (texture != null)
+            if (Texture != null)
             {
-                origin = new Vector2(texture.Width / 2, texture.Height / 2);
-                source = new Rectangle(0, 0, texture.Width, texture.Height);
+                origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
+                source = new Rectangle(0, 0, Texture.Width, Texture.Height);
             }
         }
 
@@ -89,7 +89,7 @@ namespace ARPG
 
         public virtual void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, Position, source, color, rotation, origin, scale, spriteEffects, spriteLayer);
+            spriteBatch.Draw(Texture, Position, source, color, rotation, origin, scale, spriteEffects, spriteLayer);
         }
     }
 }

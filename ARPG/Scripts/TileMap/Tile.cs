@@ -9,48 +9,23 @@ using static System.Formats.Asn1.AsnWriter;
 
 namespace ARPG
 {
-    public class Tile
+    public class Tile(Texture2D texture, Vector2 position, TileType type)
     {
         #region Draw variables
-        private Texture2D texture;
+        private readonly Texture2D texture = texture;
         public Color color = Color.White;
         #endregion
 
-        public Rectangle Hitbox { get; private set; }
-        public Vector2 Position { get; private set; }
-        public TileType Type { get; private set; }
+        public readonly Rectangle hitbox = new((int)position.X, (int)position.Y, TextureManager.tileSize, TextureManager.tileSize);
+        public readonly Vector2 position = position;
+        public readonly TileType type = type;
 
-        public Node node;
-
-        private Rectangle source;
-        private Vector2 origin;
-
-        public Tile(Texture2D _texture, Vector2 _position, TileType type, int x, int y)
-        {
-            texture = _texture;
-            Position = _position;
-            Type = type;
-            Hitbox = new Rectangle((int)_position.X, (int)_position.Y, TextureManager.tileSize, TextureManager.tileSize);
-
-            bool walkable = false;
-
-            if (type == TileType.passable)
-            {
-                walkable = true;
-            }
-
-            node = new Node(Position, new Point(x, y), walkable, this);
-
-            if (texture != null)
-            {
-                origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
-                source = new Rectangle(0, 0, _texture.Width, _texture.Height);
-            }
-        }
+        private Rectangle source = new(0, 0, texture.Width, texture.Height);
+        private Vector2 origin = new(texture.Width / 2, texture.Height / 2);
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, Position, source, color, 0, origin, Vector2.One, SpriteEffects.None, TextureManager.SpriteLayers[SpriteLayer.Default]);
+            spriteBatch.Draw(texture, position, source, color, 0, origin, Vector2.One, SpriteEffects.None, TextureManager.SpriteLayers[SpriteLayer.Default]);
 
             //node.DebugDraw(spriteBatch);
         }

@@ -39,13 +39,13 @@ namespace ARPG
             #endregion
 
             #region Draw variables
-            texture = TextureManager.ProjectileTextures[type];
+            Texture = TextureManager.ProjectileTextures[type];
             spriteLayer = TextureManager.SpriteLayers[SpriteLayer.Projectile];
             #endregion
 
             this.type = type;
 
-            hitbox = new Rectangle((int)base.Position.X, (int)base.Position.Y, texture.Width, texture.Height);
+            hitbox = new Rectangle((int)base.Position.X, (int)base.Position.Y, Texture.Width, Texture.Height);
         }
 
         public override void CallOnInstantiate()

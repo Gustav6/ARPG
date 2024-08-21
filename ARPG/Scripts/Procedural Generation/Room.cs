@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace ARPG
 {
@@ -12,9 +13,10 @@ namespace ARPG
     {
         public Vector2 Position { get; private set; }
 
-        public Tile[,] grid;
-        private int width, height;
-        private int x, y;
+        public Tile[,] Grid { get; private set; }
+        public Node[,] NodeGrid { get; private set; }
+        private readonly int width, height;
+        private readonly int x, y;
 
         public Rectangle bounds;
 
@@ -32,7 +34,8 @@ namespace ARPG
             x = xPos;
             y = yPos;
 
-            grid = new Tile[width, height];
+            Grid = new Tile[width, height];
+            NodeGrid = new Node[width, height];
 
             #region Creating the room
             for (int x = 0; x < width; x++)
@@ -52,7 +55,16 @@ namespace ARPG
                         type = TileType.unPassable;
                     }
 
-                    grid[x, y] = new Tile(texture, position, type, x, y);
+                    Grid[x, y] = new Tile(texture, position, type);
+
+                    bool walkable = false;
+
+                    if (type == TileType.passable)
+                    {
+                        walkable = true;
+                    }
+
+                    NodeGrid[x, y] = new Node(Grid[x, y].position, new Point(x, y), walkable);
                 }
             }
             #endregion
@@ -124,11 +136,11 @@ namespace ARPG
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            for (int x = 0; x < grid.GetLength(0); x++)
+            for (int x = 0; x < Grid.GetLength(0); x++)
             {
-                for (int y = 0; y < grid.GetLength(1); y++)
+                for (int y = 0; y < Grid.GetLength(1); y++)
                 {
-                    grid[x, y].Draw(spriteBatch);
+                    Grid[x, y].Draw(spriteBatch);
                 }
             }
         }

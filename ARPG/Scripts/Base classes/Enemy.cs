@@ -23,7 +23,7 @@ namespace ARPG
         public bool canPathFind = true;
 
         public List<Node> prevPath;
-        public List<Node> path;
+        public List<Vector2> path;
 
         public override void CallOnInstantiate()
         {
@@ -73,18 +73,20 @@ namespace ARPG
         #region Methods related to pathfinding
         public void PlayerInstance_OnNodeChange(object sender, EventArgs e)
         {
-            if (Library.gameObjects.Contains(this) && CanMove)
+            if (Library.activeRoom.NodeGrid == null || !Library.gameObjects.Contains(this))
             {
-                path = AStar.instance.FindPath(Library.activeRoom.grid, Position, Library.playerInstance.Position);
+                return;
+            }
 
-                if (CurrentState != movingState && path.Count > 0)
-                {
-                    SwitchState(movingState);
-                }
-                else if (CurrentState != idleState && path.Count == 0)
-                {
-                    SwitchState(idleState);
-                }
+            path = AStar.instance.FindPath(Library.activeRoom.NodeGrid, this, Position, Library.playerInstance.Position);
+
+            if (CurrentState != movingState && HasValidPath())
+            {
+                SwitchState(movingState);
+            }
+            else if (CurrentState != idleState && !HasValidPath())
+            {
+                SwitchState(idleState);
             }
         }
 
@@ -94,17 +96,13 @@ namespace ARPG
             {
                 return true;
             }
-            else if (CurrentState == movingState)
-            {
-                direction = Vector2.Zero;
-            }
 
             return false;
         }
 
         public bool HasReachedTarget()
         {
-            if (HasValidPath() && BoundingBox.Intersects(path.Last().hitbox))
+            if (path != null && path.Count <= 1)
             {
                 return true;
             }
@@ -178,7 +176,7 @@ namespace ARPG
 
                 Vector2 size = TextureManager.Font.MeasureString(Health.ToString());
 
-                Vector2 position = new(Position.X - size.X / 2, Position.Y + texture.Height / 2);
+                Vector2 position = new(Position.X - size.X / 2, Position.Y + Texture.Height / 2);
 
                 spriteBatch.DrawString(TextureManager.Font, Health.ToString(), position, color, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, TextureManager.SpriteLayers[SpriteLayer.UI]);
             }
@@ -222,16 +220,11 @@ namespace ARPG
     public class EnemyMovingState : EntityBaseState
     {
         private Enemy enemy;
-        private Node nextTarget;
+        private Vector2? tempTarget;
 
         public override void EnterState(Entity enemyReference)
         {
             enemy = (Enemy)enemyReference;
-
-            if (enemy.canPathFind && enemy.HasValidPath())
-            {
-                FollowPath();
-            }
         }
 
         public override void Update(GameTime gameTime)
@@ -239,23 +232,17 @@ namespace ARPG
             enemy.Move(gameTime);
             enemy.UpdateHitboxAndHands();
 
-            if (enemy.canPathFind && nextTarget != null)
+            if (enemy.canPathFind && enemy.HasValidPath())
             {
-                if (enemy.path.Count > 0)
+                if (enemy.HasReachedTarget())
                 {
-                    if (enemy.HasReachedTarget())
-                    {
-                        enemy.direction = Vector2.Zero;
-                    }
-                    else if (enemy.BoundingBox.Intersects(nextTarget.hitbox))
-                    {
-                        enemy.path.RemoveAt(0);
-                        FollowPath();
-                    }
+                    enemy.direction = Vector2.Zero;
+                    tempTarget = null;
                 }
-                else
+                else if (tempTarget == null || ReachedTarget(tempTarget.Value))
                 {
-                    enemy.SwitchState(enemy.idleState);
+                    enemy.path.RemoveAt(0);
+                    MoveTowardsTarget();
                 }
             }
 
@@ -265,29 +252,38 @@ namespace ARPG
             }
         }
 
-        private void FollowPath()
+        private void MoveTowardsTarget()
         {
-            if (enemy.path.Count == 0)
-            {
-                return;
-            }
-
-            nextTarget = enemy.path.First();
-            enemy.direction = DirectionTowardsNode(nextTarget);
+            tempTarget = enemy.path.First();
+            enemy.direction = GetDirection(tempTarget.Value);
         }
 
-        private Vector2 DirectionTowardsNode(Node target)
+        public bool ReachedTarget(Vector2 target)
         {
-            Vector2 result = target.worldPosition - enemy.Position;
+            if (enemy.direction.X > 0 && enemy.Position.X > target.X || enemy.direction.X < 0 && enemy.Position.X < target.X)
+            {
+                return true;
+            }
+            else if (enemy.direction.Y > 0 && enemy.Position.Y > target.Y || enemy.direction.Y < 0 && enemy.Position.Y < target.Y)
+            {
+                return true;
+            }
 
-            result.Normalize();
+            return false;
+        }
 
-            return result;
+        private Vector2 GetDirection(Vector2 target)
+        {
+            Vector2 direction = target - enemy.Position;
+
+            direction.Normalize();
+
+            return direction;
         }
 
         public override void ExitState()
         {
-            nextTarget = null;
+
         }
     }
     #endregion

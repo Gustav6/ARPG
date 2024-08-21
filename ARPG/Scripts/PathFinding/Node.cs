@@ -8,21 +8,19 @@ using System.Threading.Tasks;
 
 namespace ARPG
 {
-    public class Node(Vector2 position, Point gridPosition, bool walkable, Tile tile) : IHeapItem<Node>
+    public class Node(Vector2 position, Point gridPosition, bool walkable) : IHeapItem<Node>
     {
         public readonly bool walkable = walkable;
         public readonly Vector2 worldPosition = position;
         public readonly Point gridPosition = gridPosition;
-        public readonly Rectangle hitbox = tile.Hitbox;
 
         public int gCost; // Cost from starting node
         public int hCost; // How far away from end node
-        public int heapIndex;
-
         public int FCost { get { return hCost + gCost; } }
 
         public Point? parent; // What node that "owns" this node
 
+        public int heapIndex;
         public int HeapIndex
         {
             get { return heapIndex; }

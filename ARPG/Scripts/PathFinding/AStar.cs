@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,27 +10,31 @@ namespace ARPG
     {
         public static AStar instance = new();
 
-        private Node[] nodes;
+        private Node[,] nodes;
 
         private int gridWidth, gridHeight;
 
         private Node start, target;
 
-        private List<Node> path = [];
+        private List<Vector2> path = [];
+        private List<Node> currentNodeNeighbors = [];
         private HashSet<Node> closedNodes = [];
         private Heap<Node> openNodes;
 
-        private List<Node> hCostNeighbors = [], currentNodeNeighbors = [];
+        public int amountOfRequests;
+        public TimeSpan totalTimeTaken;
 
         public void StartFindPath()
         {
 
         }
 
-        public List<Node> FindPath(Tile[,] grid, Vector2 _start, Vector2 _target)
+        public List<Vector2> FindPath(Node[,] grid, GameObject requester, Vector2 _start, Vector2 _target)
         {
             Stopwatch sw = Stopwatch.StartNew();
             sw.Start();
+
+            amountOfRequests++;
 
             gridWidth = grid.GetLength(0);
             gridHeight = grid.GetLength(1);
@@ -37,23 +42,19 @@ namespace ARPG
             path.Clear();
             closedNodes.Clear();
 
-            if (openNodes == null || gridWidth * gridHeight > openNodes.Count)
+            if (openNodes == null || gridWidth * gridHeight > openNodes.length)
             {
                 openNodes = new Heap<Node>(gridWidth * gridHeight);
             }
-
-            if (nodes == null || nodes.Length < grid.Length)
+            else
             {
-                nodes = new Node[grid.Length];
+                openNodes.Clear();
             }
 
-            for (int i = 0; i < grid.Length; i++)
-            {
-                nodes[i] = grid[i % gridWidth, i / gridWidth].node;
-            }
+            nodes = grid;
 
-            start = NodeFromWorldPoint(_target);
-            target = NodeFromWorldPoint(_start);
+            start = NodeFromWorldPoint(_start, requester);
+            target = NodeFromWorldPoint(_target, Library.playerInstance);
 
             openNodes.Add(start);
 
@@ -67,10 +68,12 @@ namespace ARPG
 
                 if (currentNode == target)
                 {
-                    path = RetracePath(currentNode);
+                    path = RetracePath();
 
                     sw.Stop();
-                    Debug.WriteLine("Path found: " + sw.Elapsed);
+                    //Debug.WriteLine("Time to find path was: " + sw.Elapsed);
+
+                    totalTimeTaken += sw.Elapsed;
 
                     break;
                 }
@@ -108,21 +111,21 @@ namespace ARPG
                 #endregion
             }
 
-            return new List<Node>(path);
+            return new List<Vector2>(path);
         }
 
-        private List<Node> RetracePath(Node currentNode)
+        private List<Vector2> RetracePath()
         {
             path.Clear();
-            Node temp = currentNode;
+            Node temp = target;
 
             while (temp.gridPosition != start.gridPosition)
             {
                 if (temp.parent != null)
                 {
-                    path.Add(temp);
+                    path.Add(temp.worldPosition);
 
-                    temp = GetNode(temp.parent.Value);
+                    temp = nodes[temp.parent.Value.X, temp.parent.Value.Y];
                 }
                 else
                 {
@@ -130,28 +133,32 @@ namespace ARPG
                 }
             }
 
+            path.Reverse();
+
             return path;
         }
 
-        private Node NodeFromWorldPoint(Vector2 worldPosition)
+        private Node NodeFromWorldPoint(Vector2 worldPosition, GameObject requester)
         {
-            Point offset = new((int)nodes[0].worldPosition.X / TextureManager.tileSize, (int)nodes[0].worldPosition.Y / TextureManager.tileSize);
+            Node firstNode = nodes[0, 0];
 
-            float percentX = (worldPosition.X) / TextureManager.tileSize - offset.X;
-            float percentY = (worldPosition.Y) / TextureManager.tileSize - offset.Y;
+            Point offset = new((int)firstNode.worldPosition.X / TextureManager.tileSize, (int)firstNode.worldPosition.Y / TextureManager.tileSize);
 
-            percentX = MathHelper.Clamp(percentX, 0, gridWidth - 1);
-            percentY = MathHelper.Clamp(percentY, 0, gridHeight - 1);
+            float x = ((worldPosition.X + requester.Texture.Width / 2) / TextureManager.tileSize) - offset.X;
+            float y = ((worldPosition.Y + requester.Texture.Height / 2) / TextureManager.tileSize) - offset.Y;
 
-            return GetNode(new Point((int)percentX, (int)percentY));
+            x = MathHelper.Clamp(x, 0, gridWidth - 1);
+            y = MathHelper.Clamp(y, 0, gridHeight - 1);
+
+            return nodes[(int)x, (int)y];
         }
 
-        private Node GetNode(Point position)
-        {
-            int i = position.X + position.Y * gridWidth;
-
-            return nodes[i];
-        }
+        //private Node GetNode(Point position)
+        //{
+        //    int i = position.X + position.Y * gridWidth;
+        //
+        //    return nodes[position.X, position.Y];
+        //}
 
         private int GetDistance(Node NodeA, Node NodeB)
         {
@@ -176,50 +183,50 @@ namespace ARPG
             #region Get neighbors
             if (InBounds(position.X + 1, position.Y))
             {
-                NeighboringNode = GetNode(new Point(position.X + 1, position.Y));
+                NeighboringNode = nodes[position.X + 1, position.Y];
 
                 list.Add(NeighboringNode);
             }
             if (InBounds(position.X - 1, position.Y))
             {
-                NeighboringNode = GetNode(new Point(position.X - 1, position.Y));
+                NeighboringNode = nodes[position.X - 1, position.Y];
 
                 list.Add(NeighboringNode);
             }
             if (InBounds(position.X, position.Y + 1))
             {
-                NeighboringNode = GetNode(new Point(position.X, position.Y + 1));
+                NeighboringNode = nodes[position.X, position.Y + 1];
 
                 list.Add(NeighboringNode);
             }
             if (InBounds(position.X, position.Y - 1))
             {
-                NeighboringNode = GetNode(new Point(position.X, position.Y - 1));
+                NeighboringNode = nodes[position.X, position.Y - 1];
 
                 list.Add(NeighboringNode);
             }
 
             if (InBounds(position.X + 1, position.Y + 1))
             {
-                NeighboringNode = GetNode(new Point(position.X + 1, position.Y + 1));
+                NeighboringNode = nodes[position.X + 1, position.Y + 1];
 
                 list.Add(NeighboringNode);
             }
             if (InBounds(position.X + 1, position.Y - 1))
             {
-                NeighboringNode = GetNode(new Point(position.X + 1, position.Y - 1));
+                NeighboringNode = nodes[position.X + 1, position.Y - 1];
 
                 list.Add(NeighboringNode);
             }
             if (InBounds(position.X - 1, position.Y - 1))
             {
-                NeighboringNode = GetNode(new Point(position.X - 1, position.Y - 1));
+                NeighboringNode = nodes[position.X - 1, position.Y - 1];
 
                 list.Add(NeighboringNode);
             }
             if (InBounds(position.X - 1, position.Y + 1))
             {
-                NeighboringNode = GetNode(new Point(position.X - 1, position.Y + 1));
+                NeighboringNode = nodes[position.X - 1, position.Y + 1];
 
                 list.Add(NeighboringNode);
             }

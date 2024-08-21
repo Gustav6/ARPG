@@ -12,7 +12,7 @@ namespace ARPG
         private static int roomsLeft;
         private static readonly int maximumAmountOfRooms = 8;
 
-        public static int minimumAmountOfEnemies = 1, maximumAmountOfEnemies = 1;
+        public static int minimumAmountOfEnemies = 50, maximumAmountOfEnemies = 50;
         #endregion
 
 
@@ -46,9 +46,9 @@ namespace ARPG
 
                     #endregion
 
-                    if (RoomCanBePlaced(xPosition, yPosition, currentRoom.grid))
+                    if (RoomCanBePlaced(xPosition, yPosition, currentRoom.Grid))
                     {
-                        PlaceRoom(xPosition, yPosition, currentRoom.grid);
+                        PlaceRoom(xPosition, yPosition, currentRoom.Grid);
 
                         if (roomsLeft == maximumAmountOfRooms)
                         {
